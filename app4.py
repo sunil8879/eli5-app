@@ -100,17 +100,17 @@ st.markdown("""
 
 # --- 4.5. APP INTRODUCTION (New Section) ---
 st.markdown("""
-    <div style="background-color: #FFFACD; padding: 20px; border-radius: 15px; border: 3px dashed #FF4500; margin-bottom: 40px;">
+    <div style="background-color: #1877F2; padding: 20px; border-radius: 15px; border: 3px dashed #FF4500; margin-bottom: 40px;">
         <h2 style="text-align: center; color: #FF4500; text-shadow: none; margin-top: 0;">
             Welcome to the Simplest Corner of the Internet! 🧠
         </h2>
-        <p style="text-align: center; color: #000000; font-size: 1.1rem; font-weight: 700;">
+        <p style="text-align: center; color: #FFFFFF; font-size: 1.1rem; font-weight: 700;">
             Have you ever wondered how something works, but all the answers felt like they were written in a secret adult code? 🤯
         </p>
-        <p style="text-align: center; color: #000000; font-size: 1.1rem; font-weight: 700;">
+        <p style="text-align: center; color: #FFFFFF; font-size: 1.1rem; font-weight: 700;">
             We use the power of AI to break down the biggest ideas—from **Black Holes** to **Bitcoin**—into stories so easy, even a 5-year-old can understand!
         </p>
-        <p style="text-align: center; color: #000000; font-size: 1.1rem; font-weight: 700;">
+        <p style="text-align: center; color: #FFFFFF; font-size: 1.1rem; font-weight: 700;">
             Just type your topic into the **magical turquoise box** below and prepare for a fun explanation, a cool 3D picture, and a perfect video. Let's learn! 👇
         </p>
     </div>
@@ -182,3 +182,4 @@ if query:
                     st.video(f"https://www.youtube.com/watch?v={video_id}")
                 else:
                     st.write("No suitable video found.")
+
