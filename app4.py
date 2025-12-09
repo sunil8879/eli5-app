@@ -10,6 +10,7 @@ st.set_page_config(
 )
 
 # --- 2. CUSTOM CSS ---
+# --- 2. CUSTOM CSS (FIXED HEIGHT) ---
 st.markdown("""
     <style>
     /* 1. Main Background: WHITE */
@@ -19,7 +20,7 @@ st.markdown("""
 
     /* 2. Text Color: Black & Readable */
     p, li, .stMarkdown {
-        color: #000000;
+        color: #000000 !important;
         font-weight: 600;
         font-size: 1.15rem;
         line-height: 1.6;
@@ -35,6 +36,13 @@ st.markdown("""
     }
 
     /* 4. Search Bar: TURQUOISE */
+    
+    /* FIX 1: Increase the overall height allocated to the widget container */
+    .stTextInput > div {
+        min-height: 85px; /* Must be slightly larger than the input height (70px) */
+    }
+
+    /* FIX 2: Style and size the actual input element */
     .stTextInput > div > div > input {
         background-color: #40E0D0 !important; /* Turquoise */
         color: #000000 !important;             /* Black Text */
@@ -42,7 +50,9 @@ st.markdown("""
         border: 2px solid #000000;
         border-radius: 12px;
         box-shadow: 4px 4px 0px rgba(0,0,0,0.2); 
-        height: 70px; 
+        height: 70px; /* Taller input box */
+        font-size: 24px; /* Larger font size to fill the space */
+        padding: 15px; /* Add vertical padding */
     }
     
     /* 5. Tabs styling */
@@ -63,7 +73,6 @@ st.markdown("""
     }
     </style>
     """, unsafe_allow_html=True)
-
 # --- 3. API SETUP ---
 # NOTE: Replace this placeholder key with your actual Gemini API Key
 GOOGLE_API_KEY = "AIzaSyCDbYrDJmKoVRhUGKK0hF6fue4Ayg7keKs" 
@@ -183,6 +192,7 @@ if query:
                     st.video(f"https://www.youtube.com/watch?v={video_id}")
                 else:
                     st.write("No suitable video found.")
+
 
 
 
