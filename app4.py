@@ -4,62 +4,62 @@ from youtube_search import YoutubeSearch
 
 # --- 1. PAGE CONFIGURATION ---
 st.set_page_config(
-    page_title="ELI5 International",
-    page_icon="🌏",
+    page_title="ELI5 Pro",
+    page_icon="🧠",
     layout="wide"
 )
 
 # --- 2. CUSTOM CSS ---
 st.markdown("""
     <style>
-    /* 1. Main Background: WHITE */
+    /* 1. Main Background: WHITE (Changed from Aquamarine) */
     .stApp {
         background-color: #FFFFFF;
     }
 
-    /* 2. Text Color: Black */
+    /* 2. Text Color: Black & Readable */
     p, li, .stMarkdown {
         color: #000000 !important;
         font-weight: 600;
-        font-size: 1.1rem;
+        font-size: 1.15rem;
         line-height: 1.6;
     }
 
-    /* 3. HEADERS */
+    /* 3. HEADERS: Clean 3D Bevel (No Blurry Shadow) */
     h1, h2, h3 {
         color: #000000 !important;
         font-family: 'Verdana', sans-serif;
         font-weight: 900;
-        text-shadow: 2px 2px 0px #CCCCCC; 
+        letter-spacing: 0.5px;
+        /* The "Clean Bevel" 3D Effect */
+        text-shadow: 2px 2px 0px #CCCCCC; /* Changed shadow to Grey for White BG */
     }
 
-    /* 4. SEARCH BOX: TURQUOISE (Standard Size) */
+    /* 4. Search Bar: TURQUOISE (Changed from White) */
     .stTextInput > div > div > input {
         background-color: #40E0D0 !important; /* Turquoise */
-        color: #000000 !important;             /* Black Text */
-        font-weight: bold !important;
-        border: 2px solid #000000 !important;  /* Black Border */
-        border-radius: 10px;
-        box-shadow: 3px 3px 0px rgba(0,0,0,0.2);
-    }
-    
-    /* Placeholder color */
-    ::placeholder {
-        color: rgba(0,0,0,0.6) !important;
+        color: #000000 !important;
+        font-weight: bold;
+        border: 2px solid #000000;
+        border-radius: 12px;
+        /* Sharp simple shadow */
+        box-shadow: 4px 4px 0px rgba(0,0,0,0.2); 
     }
     
     /* 5. Tabs styling */
     .stTabs [data-baseweb="tab-list"] {
-        background-color: #F0F0F0;
+        background-color: rgba(255,255,255, 0.5);
         border-radius: 15px;
-        padding: 5px;
-        border: 2px solid black;
+        padding: 10px;
+        border: 1px solid #ccc;
     }
     .stTabs [data-baseweb="tab"] {
         color: #000000;
         font-weight: 800;
+        font-size: 1.2rem;
     }
     
+    /* 6. Remove default top padding */
     .block-container {
         padding-top: 2rem;
     }
@@ -67,42 +67,42 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # --- 3. API SETUP ---
+# Securely read the key from Streamlit Secrets
 try:
     GOOGLE_API_KEY = st.secrets["GOOGLE_API_KEY"]
     genai.configure(api_key=GOOGLE_API_KEY)
     model = genai.GenerativeModel('gemini-flash-latest')
 except:
-    st.error("⚠️ API Key Missing! Check your Streamlit Secrets.")
+    st.error("⚠️ API Key Missing in Secrets")
 
-# --- 4. THE LOGO ---
+# --- 4. THE CLEAN 3D LOGO ---
 st.markdown("""
     <div style="text-align: center; margin-bottom: 30px;">
-        <h1 style="font-size: 90px; margin: 0; line-height: 0.9;">
-            ELI<span style="color: #FF4500;">5</span>
+        <!-- The Main 3D Text -->
+        <h1 style="font-size: 90px; margin: 0; line-height: 1.0; text-shadow: 4px 4px 0px #CCCCCC;">
+            ELI<span style="color: #FF4500; text-shadow: 4px 4px 0px #CCCCCC;">5</span>
         </h1>
+        <!-- The Subtitle (Sticker Style) -->
         <div style="
             background-color: #000000; 
-            color: white; 
+            color: #FFFFFF; 
             display: inline-block; 
-            padding: 8px 25px; 
-            font-size: 20px; 
+            padding: 8px 20px; 
             font-weight: bold; 
-            border-radius: 50px; 
+            font-size: 20px;
+            border-radius: 50px;
             box-shadow: 3px 3px 0px #CCCCCC;
-            transform: rotate(-3deg);
             margin-top: 10px;
         ">
-            INTERNATIONAL EDITION 🌏
+            EXPLAIN LIKE I'M FIVE
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-# --- 5. SEARCH INPUT (WIDE) ---
-# [1, 15, 1] ensures the search bar is WIDE (not 50%) but has tiny margins
-col1, col2, col3 = st.columns([1, 15, 1])
-
+# --- 5. SEARCH INPUT ---
+col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
-    query = st.text_input("Search Topic:", placeholder="e.g. Gravity...", label_visibility="collapsed")
+    query = st.text_input("Search Topic:", placeholder="e.g. Gravity, Moon, Money...", label_visibility="collapsed")
 
 # --- 6. LOGIC ---
 if query:
@@ -118,7 +118,8 @@ if query:
         response = model.generate_content(prompt)
         
         clean_query = query.replace(" ", "-")
-        image_url = f"https://image.pollinations.ai/prompt/3d-render-of-{clean_query}-bright-colors-pixar-style-white-background-4k"
+        # Updated Image Prompt for cleaner look
+        image_url = f"https://image.pollinations.ai/prompt/3d-render-of-{clean_query}-bright-colors-pixar-style-clean-background-4k"
         
         results = YoutubeSearch(query + " for kids", max_results=1).to_dict()
 
