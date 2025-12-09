@@ -12,9 +12,9 @@ st.set_page_config(
 # --- 2. CUSTOM CSS (Cleaned Up 3D) ---
 st.markdown("""
     <style>
-    /* 1. Main Background: Aquamarine */
+    /* 1. Main Background: WHITE (Changed from #7FFFD4) */
     .stApp {
-        background-color: #7FFFD4;
+        background-color: #FFFFFF;
     }
 
     /* 2. Text Color: Black & Readable */
@@ -31,13 +31,13 @@ st.markdown("""
         font-family: 'Verdana', sans-serif; /* Clean, wide font */
         font-weight: 900;
         letter-spacing: 0.5px;
-        /* The "Clean Bevel" 3D Effect */
-        text-shadow: 2px 2px 0px #FFFFFF; 
+        /* The "Clean Bevel" 3D Effect - Adjusted shadow color for white BG */
+        text-shadow: 2px 2px 0px #CCCCCC; 
     }
 
-    /* 4. Search Bar: Clean White Box */
+    /* 4. Search Bar: TURQUOISE (Changed from #FFFFFF) */
     .stTextInput > div > div > input {
-        background-color: #FFFFFF !important;
+        background-color: #40E0D0 !important; /* Turquoise */
         color: #000000 !important;
         font-weight: bold;
         border: 2px solid #000000;
@@ -66,7 +66,7 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # --- 3. API SETUP ---
-# PASTE YOUR KEY HERE
+# I kept your key here so it works immediately.
 GOOGLE_API_KEY = "AIzaSyCDbYrDJmKoVRhUGKK0hF6fue4Ayg7keKs" 
 
 try:
@@ -79,8 +79,8 @@ except:
 st.markdown("""
     <div style="text-align: center; margin-bottom: 30px;">
         <!-- The Main 3D Text -->
-        <h1 style="font-size: 90px; margin: 0; line-height: 1.0; text-shadow: 4px 4px 0px #FFFFFF;">
-            ELI<span style="color: #FF4500; text-shadow: 4px 4px 0px #FFFFFF;">5</span>
+        <h1 style="font-size: 90px; margin: 0; line-height: 1.0; text-shadow: 4px 4px 0px #CCCCCC;">
+            ELI<span style="color: #FF4500; text-shadow: 4px 4px 0px #CCCCCC;">5</span>
         </h1>
         <!-- The Subtitle (Sticker Style) -->
         <div style="
@@ -91,7 +91,7 @@ st.markdown("""
             font-weight: bold; 
             font-size: 20px;
             border-radius: 50px;
-            box-shadow: 3px 3px 0px #FFFFFF;
+            box-shadow: 3px 3px 0px #CCCCCC;
             margin-top: 10px;
         ">
             EXPLAIN LIKE I'M FIVE
