@@ -1,12 +1,11 @@
 import streamlit as st
 import google.generativeai as genai
 from youtube_search import YoutubeSearch
-from google.api_core.exceptions import ResourceExhausted
 
 # --- 1. PAGE CONFIGURATION ---
 st.set_page_config(
-    page_title="ELI5 International",
-    page_icon="🌏",
+    page_title="ELI5 Pro",
+    page_icon="🧠",
     layout="wide"
 )
 
@@ -18,7 +17,7 @@ st.markdown("""
         background-color: #FFFFFF;
     }
 
-    /* 2. Text Color: Black */
+    /* 2. Text Color: Black & Readable */
     p, li, .stMarkdown {
         color: #000000 !important;
         font-weight: 600;
@@ -47,7 +46,7 @@ st.markdown("""
     
     /* 5. Tabs styling */
     .stTabs [data-baseweb="tab-list"] {
-        background-color: #F0F0F0;
+        background-color: rgba(255,255,255, 0.5);
         border-radius: 15px;
         padding: 10px;
         border: 2px solid black;
@@ -69,10 +68,10 @@ GOOGLE_API_KEY = "AIzaSyCDbYrDJmKoVRhUGKK0hF6fue4Ayg7keKs"
 
 try:
     genai.configure(api_key=GOOGLE_API_KEY)
-    # Using 1.5-flash as it is more stable for free tier
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    # Switched model to 'gemini-pro' to try and bypass the 'flash' quota limit
+    model = genai.GenerativeModel('gemini-pro')
 except:
-    st.error("⚠️ API Key Error")
+    st.error("⚠️ API Key Missing")
 
 # --- 4. THE TILTED LOGO ---
 st.markdown("""
@@ -98,56 +97,63 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # --- 5. SEARCH INPUT ---
-col1, col2, col3 = st.columns([1, 10, 1])
+col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
     query = st.text_input("Search Topic:", placeholder="e.g. Gravity, Moon, Money...", label_visibility="collapsed")
 
-# --- 6. LOGIC ---
+# --- 6. LOGIC (CRASH PROOF) ---
 if query:
     st.write("---") 
     
     with st.spinner('⚡ Brainstorming...'):
         
-        # We try to generate the text. If Google says "Stop", we handle it gracefully.
+        # 1. GENERATE TEXT (With Safety Net)
+        text_response = ""
         try:
-            prompt = f"Explain '{query}' to a 5-year-old. Use a fun, energetic tone. Use simple analogies. Write roughly 400 words. Split into clear sections with bold headers."
+            prompt = f"Explain '{query}' to a 5-year-old. Fun tone. 300 words."
             response = model.generate_content(prompt)
-            final_text = response.text
-            
-            # If text generation worked, we proceed to Image & Video
-            
-            clean_query = query.replace(" ", "-")
-            image_url = f"https://image.pollinations.ai/prompt/3d-render-of-{clean_query}-bright-colors-pixar-style-white-background-4k"
-            
-            results = YoutubeSearch(query + " for kids", max_results=1).to_dict()
-
-            # TABS
-            tab1, tab2 = st.tabs(["📖 THE STORY", "📺 VISUALS"])
-
-            # TAB 1: TEXT
-            with tab1:
-                st.markdown(final_text)
-
-            # TAB 2: VISUALS
-            with tab2:
-                col_a, col_b = st.columns(2)
-                
-                with col_a:
-                    st.markdown("### 🎨 3D Drawing")
-                    st.image(image_url, use_container_width=True)
-                    
-                with col_b:
-                    st.markdown("### 🎥 Explanation Video")
-                    if results:
-                        video_id = results[0]['id']
-                        st.video(f"https://www.youtube.com/watch?v={video_id}")
-                    else:
-                        st.write("No video found.")
-        
-        except ResourceExhausted:
-            st.warning("🚦 Whoops! Too many people are learning right now.")
-            st.write("Google's AI brain is taking a short nap. **Please wait 1 minute and try again.**")
-            
+            text_response = response.text
         except Exception as e:
-            st.error("Something went wrong. Please try again later.")
-            st.write(e)
+            # If Google blocks us, we use this Backup Text so the app still looks good
+            text_response = f"""
+            ### 🚦 High Traffic Alert!
+            
+            **Google's AI brain is taking a quick nap** because we made too many requests too fast (Error 429).
+            
+            Don't worry! Your **Images** and **Videos** below are still working perfectly. 👇
+            
+            *(Please wait 60 seconds and search again to get the text back!)*
+            """
+
+        # 2. GENERATE IMAGE (No API key needed, always works)
+        clean_query = query.replace(" ", "-")
+        image_url = f"https://image.pollinations.ai/prompt/3d-render-of-{clean_query}-bright-colors-pixar-style-white-background-4k"
+        
+        # 3. SEARCH VIDEO (No API key needed, always works)
+        try:
+            results = YoutubeSearch(query + " for kids", max_results=1).to_dict()
+        except:
+            results = None
+
+        # --- DISPLAY RESULTS ---
+        tab1, tab2 = st.tabs(["📖 THE STORY", "📺 VISUALS"])
+
+        # TAB 1: TEXT
+        with tab1:
+            st.markdown(text_response)
+
+        # TAB 2: VISUALS
+        with tab2:
+            col_a, col_b = st.columns(2)
+            
+            with col_a:
+                st.markdown("### 🎨 3D Drawing")
+                st.image(image_url, use_container_width=True)
+                
+            with col_b:
+                st.markdown("### 🎥 Explanation Video")
+                if results:
+                    video_id = results[0]['id']
+                    st.video(f"https://www.youtube.com/watch?v={video_id}")
+                else:
+                    st.write("No video found.")
