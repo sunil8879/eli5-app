@@ -67,7 +67,8 @@ st.markdown("""
 
 # --- 3. API SETUP ---
 # PASTE YOUR KEY HERE
-GOOGLE_API_KEY = "AIzaSyCDbYrDJmKoVRhUGKK0hF6fue4Ayg7keKs" 
+# Securely read the key from Streamlit Cloud
+GOOGLE_API_KEY = st.secrets["GOOGLE_API_KEY"]
 
 try:
     genai.configure(api_key=GOOGLE_API_KEY)
@@ -141,4 +142,5 @@ if query:
                     video_id = results[0]['id']
                     st.video(f"https://www.youtube.com/watch?v={video_id}")
                 else:
+
                     st.write("No video found.")
