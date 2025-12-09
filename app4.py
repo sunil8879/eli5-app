@@ -73,9 +73,14 @@ st.markdown("""
     }
     </style>
     """, unsafe_allow_html=True)
+
 # --- 3. API SETUP ---
 # NOTE: Replace this placeholder key with your actual Gemini API Key
-GOOGLE_API_KEY = "AIzaSyCDbYrDJmKoVRhUGKK0hF6fue4Ayg7keKs" 
+try:
+    GOOGLE_API_KEY = st.secrets["google_api_key"]
+except KeyError:
+    st.error("⚠️ API Key not found in Streamlit Secrets. Please set 'google_api_key'.")
+    st.stop() # Stop execution if key isn't found
 
 try:
     genai.configure(api_key=GOOGLE_API_KEY)
@@ -111,7 +116,7 @@ st.markdown("""
 # --- 4.5. APP INTRODUCTION (New Section) ---
 st.markdown("""
     <div style="background-color: #1877F2; padding: 20px; border-radius: 15px; border: 3px dashed #FF4500; margin-bottom: 40px;">
-        <h2 style="text-align: center; color: #FFFFFF; text-shadow: none; margin-top: 0;">
+        <h2 style="text-align: center; color: #FF4500; text-shadow: none; margin-top: 0;">
             Welcome to the Simplest Corner of the Internet! 🧠
         </h2>
         <p style="text-align: center; color: #FFFFFF; font-size: 1.1rem; font-weight: 700;">
@@ -192,9 +197,3 @@ if query:
                     st.video(f"https://www.youtube.com/watch?v={video_id}")
                 else:
                     st.write("No suitable video found.")
-
-
-
-
-
-
