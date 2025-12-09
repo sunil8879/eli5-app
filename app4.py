@@ -70,7 +70,7 @@ GOOGLE_API_KEY = "AIzaSyCDbYrDJmKoVRhUGKK0hF6fue4Ayg7keKs"
 try:
     genai.configure(api_key=GOOGLE_API_KEY)
     # Using 'gemini-pro' for general explanation tasks
-    model = genai.GenerativeModel('gemini-pro')
+    model = genai.GenerativeModel('gemini-flash-latest')
 except:
     st.error("⚠️ API Key Missing or Invalid. Please check the setup.")
 
@@ -182,6 +182,7 @@ if query:
                     st.video(f"https://www.youtube.com/watch?v={video_id}")
                 else:
                     st.write("No suitable video found.")
+
 
 
 
