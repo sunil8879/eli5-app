@@ -9,12 +9,12 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- 2. CUSTOM CSS ---
+# --- 2. CUSTOM CSS (Cleaned Up 3D) ---
 st.markdown("""
     <style>
-    /* 1. Main Background: WHITE (Changed from Aquamarine) */
+    /* 1. Main Background: Aquamarine */
     .stApp {
-        background-color: #FFFFFF;
+        background-color: #7FFFD4;
     }
 
     /* 2. Text Color: Black & Readable */
@@ -28,16 +28,16 @@ st.markdown("""
     /* 3. HEADERS: Clean 3D Bevel (No Blurry Shadow) */
     h1, h2, h3 {
         color: #000000 !important;
-        font-family: 'Verdana', sans-serif;
+        font-family: 'Verdana', sans-serif; /* Clean, wide font */
         font-weight: 900;
         letter-spacing: 0.5px;
         /* The "Clean Bevel" 3D Effect */
-        text-shadow: 2px 2px 0px #CCCCCC; /* Changed shadow to Grey for White BG */
+        text-shadow: 2px 2px 0px #FFFFFF; 
     }
 
-    /* 4. Search Bar: TURQUOISE (Changed from White) */
+    /* 4. Search Bar: Clean White Box */
     .stTextInput > div > div > input {
-        background-color: #40E0D0 !important; /* Turquoise */
+        background-color: #FFFFFF !important;
         color: #000000 !important;
         font-weight: bold;
         border: 2px solid #000000;
@@ -51,7 +51,6 @@ st.markdown("""
         background-color: rgba(255,255,255, 0.5);
         border-radius: 15px;
         padding: 10px;
-        border: 1px solid #ccc;
     }
     .stTabs [data-baseweb="tab"] {
         color: #000000;
@@ -59,7 +58,7 @@ st.markdown("""
         font-size: 1.2rem;
     }
     
-    /* 6. Remove default top padding */
+    /* 6. Remove default top padding to make logo look better */
     .block-container {
         padding-top: 2rem;
     }
@@ -67,20 +66,21 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # --- 3. API SETUP ---
-# Securely read the key from Streamlit Secrets
+# PASTE YOUR KEY HERE
+GOOGLE_API_KEY = "AIzaSyCDbYrDJmKoVRhUGKK0hF6fue4Ayg7keKs" 
+
 try:
-    GOOGLE_API_KEY = st.secrets["GOOGLE_API_KEY"]
     genai.configure(api_key=GOOGLE_API_KEY)
     model = genai.GenerativeModel('gemini-flash-latest')
 except:
-    st.error("⚠️ API Key Missing in Secrets")
+    st.error("⚠️ API Key Missing")
 
 # --- 4. THE CLEAN 3D LOGO ---
 st.markdown("""
     <div style="text-align: center; margin-bottom: 30px;">
         <!-- The Main 3D Text -->
-        <h1 style="font-size: 90px; margin: 0; line-height: 1.0; text-shadow: 4px 4px 0px #CCCCCC;">
-            ELI<span style="color: #FF4500; text-shadow: 4px 4px 0px #CCCCCC;">5</span>
+        <h1 style="font-size: 90px; margin: 0; line-height: 1.0; text-shadow: 4px 4px 0px #FFFFFF;">
+            ELI<span style="color: #FF4500; text-shadow: 4px 4px 0px #FFFFFF;">5</span>
         </h1>
         <!-- The Subtitle (Sticker Style) -->
         <div style="
@@ -91,7 +91,7 @@ st.markdown("""
             font-weight: bold; 
             font-size: 20px;
             border-radius: 50px;
-            box-shadow: 3px 3px 0px #CCCCCC;
+            box-shadow: 3px 3px 0px #FFFFFF;
             margin-top: 10px;
         ">
             EXPLAIN LIKE I'M FIVE
