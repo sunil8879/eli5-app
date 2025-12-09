@@ -42,6 +42,7 @@ st.markdown("""
         border: 2px solid #000000;
         border-radius: 12px;
         box-shadow: 4px 4px 0px rgba(0,0,0,0.2); 
+        height: 70px; 
     }
     
     /* 5. Tabs styling */
@@ -182,6 +183,7 @@ if query:
                     st.video(f"https://www.youtube.com/watch?v={video_id}")
                 else:
                     st.write("No suitable video found.")
+
 
 
 
