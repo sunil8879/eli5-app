@@ -101,7 +101,7 @@ st.markdown("""
 # --- 4.5. APP INTRODUCTION (New Section) ---
 st.markdown("""
     <div style="background-color: #1877F2; padding: 20px; border-radius: 15px; border: 3px dashed #FF4500; margin-bottom: 40px;">
-        <h2 style="text-align: center; color: #FF4500; text-shadow: none; margin-top: 0;">
+        <h2 style="text-align: center; color: #FFFFFF; text-shadow: none; margin-top: 0;">
             Welcome to the Simplest Corner of the Internet! 🧠
         </h2>
         <p style="text-align: center; color: #FFFFFF; font-size: 1.1rem; font-weight: 700;">
@@ -182,4 +182,5 @@ if query:
                     st.video(f"https://www.youtube.com/watch?v={video_id}")
                 else:
                     st.write("No suitable video found.")
+
 
