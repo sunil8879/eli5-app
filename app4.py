@@ -19,7 +19,7 @@ st.markdown("""
 
     /* 2. Text Color: Black & Readable */
     p, li, .stMarkdown {
-        color: #000000 !important;
+        color: #000000;
         font-weight: 600;
         font-size: 1.15rem;
         line-height: 1.6;
@@ -182,5 +182,6 @@ if query:
                     st.video(f"https://www.youtube.com/watch?v={video_id}")
                 else:
                     st.write("No suitable video found.")
+
 
 
