@@ -9,15 +9,15 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- 2. CUSTOM CSS (Cleaned Up 3D) ---
+# --- 2. CUSTOM CSS ---
 st.markdown("""
     <style>
-    /* 1. Main Background: WHITE (Changed from #7FFFD4) */
+    /* 1. Main Background: WHITE */
     .stApp {
         background-color: #FFFFFF;
     }
 
-    /* 2. Text Color: Black & Readable */
+    /* 2. Text Color: Black */
     p, li, .stMarkdown {
         color: #000000 !important;
         font-weight: 600;
@@ -25,24 +25,22 @@ st.markdown("""
         line-height: 1.6;
     }
 
-    /* 3. HEADERS: Clean 3D Bevel (No Blurry Shadow) */
+    /* 3. HEADERS: Clean 3D Bevel */
     h1, h2, h3 {
         color: #000000 !important;
-        font-family: 'Verdana', sans-serif; /* Clean, wide font */
+        font-family: 'Verdana', sans-serif;
         font-weight: 900;
         letter-spacing: 0.5px;
-        /* The "Clean Bevel" 3D Effect - Adjusted shadow color for white BG */
         text-shadow: 2px 2px 0px #CCCCCC; 
     }
 
-    /* 4. Search Bar: TURQUOISE (Changed from #FFFFFF) */
+    /* 4. Search Bar: TURQUOISE */
     .stTextInput > div > div > input {
         background-color: #40E0D0 !important; /* Turquoise */
-        color: #000000 !important;
+        color: #000000 !important;             /* Black Text */
         font-weight: bold;
         border: 2px solid #000000;
         border-radius: 12px;
-        /* Sharp simple shadow */
         box-shadow: 4px 4px 0px rgba(0,0,0,0.2); 
     }
     
@@ -58,7 +56,6 @@ st.markdown("""
         font-size: 1.2rem;
     }
     
-    /* 6. Remove default top padding to make logo look better */
     .block-container {
         padding-top: 2rem;
     }
@@ -66,7 +63,6 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # --- 3. API SETUP ---
-# I kept your key here so it works immediately.
 GOOGLE_API_KEY = "AIzaSyCDbYrDJmKoVRhUGKK0hF6fue4Ayg7keKs" 
 
 try:
@@ -75,26 +71,25 @@ try:
 except:
     st.error("⚠️ API Key Missing")
 
-# --- 4. THE CLEAN 3D LOGO ---
+# --- 4. THE TILTED LOGO (International Edition) ---
 st.markdown("""
     <div style="text-align: center; margin-bottom: 30px;">
-        <!-- The Main 3D Text -->
-        <h1 style="font-size: 90px; margin: 0; line-height: 1.0; text-shadow: 4px 4px 0px #CCCCCC;">
-            ELI<span style="color: #FF4500; text-shadow: 4px 4px 0px #CCCCCC;">5</span>
+        <h1 style="font-size: 90px; margin: 0; line-height: 0.9;">
+            ELI<span style="color: #FF4500;">5</span>
         </h1>
-        <!-- The Subtitle (Sticker Style) -->
         <div style="
             background-color: #000000; 
-            color: #FFFFFF; 
+            color: white; 
             display: inline-block; 
-            padding: 8px 20px; 
+            padding: 10px 30px; 
+            font-size: 20px; 
             font-weight: bold; 
-            font-size: 20px;
-            border-radius: 50px;
-            box-shadow: 3px 3px 0px #CCCCCC;
+            border-radius: 50px; 
+            box-shadow: 4px 4px 0px #CCCCCC;
+            transform: rotate(-3deg);
             margin-top: 10px;
         ">
-            EXPLAIN LIKE I'M FIVE
+            INTERNATIONAL EDITION 🌏
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -118,9 +113,10 @@ if query:
         response = model.generate_content(prompt)
         
         clean_query = query.replace(" ", "-")
-        # Updated Image Prompt for cleaner look
+        # Image
         image_url = f"https://image.pollinations.ai/prompt/3d-render-of-{clean_query}-bright-colors-pixar-style-clean-background-4k"
         
+        # Video
         results = YoutubeSearch(query + " for kids", max_results=1).to_dict()
 
         # TAB 1: TEXT
