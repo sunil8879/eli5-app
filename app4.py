@@ -12,7 +12,7 @@ st.set_page_config(
 # --- 2. THE DESIGNER CSS ---
 st.markdown("""
     <style>
-    /* 1. BACKGROUND: Aquamarine with Retro Grid */
+    /* 1. BACKGROUND */
     .stApp {
         background-color: #7FFFD4;
         background-image: 
@@ -21,7 +21,17 @@ st.markdown("""
         background-size: 40px 40px; 
     }
 
-    /* 2. JUMBO SEARCH BAR (FIXED WIDTH) */
+    /* 2. FORCE FULL WIDTH (The Fix) */
+    .block-container {
+        max-width: 95% !important; /* Forces the app to be wide */
+        padding-top: 2rem !important;
+        padding-bottom: 2rem !important;
+    }
+
+    /* 3. JUMBO SEARCH BAR */
+    .stTextInput {
+        width: 100% !important; /* Ensure the widget container is full width */
+    }
     .stTextInput > div > div > input {
         font-size: 28px !important;
         height: 70px !important;
@@ -31,18 +41,17 @@ st.markdown("""
         border-radius: 50px !important;
         box-shadow: 6px 6px 0px rgba(0,0,0,0.2) !important;
         color: #000000 !important;
-        width: 100% !important; /* Forces it to fill the column */
     }
     
-    /* 3. HEADERS */
+    /* 4. HEADERS */
     h1, h2, h3 {
         color: #000000 !important;
         font-family: 'Verdana', sans-serif;
         font-weight: 900;
-        text-shadow: 3px 3px 0px #FFFFFF;
+        text-shadow: 2px 2px 0px #FFFFFF;
     }
 
-    /* 4. RESULT CARDS */
+    /* 5. RESULT CARDS */
     .result-card {
         background-color: #FFFFFF;
         border: 3px solid #000000;
@@ -54,8 +63,8 @@ st.markdown("""
         line-height: 1.6;
         margin-bottom: 20px;
     }
-
-    /* 5. TABS Styling */
+    
+    /* 6. Tabs styling */
     .stTabs [data-baseweb="tab-list"] {
         background-color: #FFFFFF;
         border-radius: 50px;
@@ -79,23 +88,23 @@ try:
     genai.configure(api_key=GOOGLE_API_KEY)
     model = genai.GenerativeModel('gemini-flash-latest')
 except:
-    st.error("🚨 API Key not found! Please check your Streamlit Secrets.")
+    st.error("🚨 API Key not found! Check Secrets.")
 
 # --- 4. THE LOGO ---
 st.markdown("""
-    <div style="text-align: center; padding-top: 20px; padding-bottom: 20px;">
-        <h1 style="font-size: 100px; margin: 0; line-height: 0.9;">
+    <div style="text-align: center; padding-top: 10px; padding-bottom: 20px;">
+        <h1 style="font-size: 80px; margin: 0; line-height: 0.9;">
             ELI<span style="color: #FF4500;">5</span>
         </h1>
         <div style="
             background-color: #000000; 
             color: white; 
             display: inline-block; 
-            padding: 10px 30px; 
-            font-size: 22px; 
+            padding: 8px 25px; 
+            font-size: 20px; 
             font-weight: bold; 
             border-radius: 50px; 
-            box-shadow: 4px 4px 0px #FFFFFF;
+            box-shadow: 3px 3px 0px #FFFFFF;
             transform: rotate(-2deg);
         ">
             INTERNATIONAL EDITION 🌏
@@ -103,13 +112,10 @@ st.markdown("""
     </div>
     """, unsafe_allow_html=True)
 
-# --- 5. THE SEARCH INPUT (FIXED) ---
-# Previous version was [1, 6, 1]. We changed to [0.5, 12, 0.5] 
-# This gives the center column almost all the space.
-col_left, col_center, col_right = st.columns([1, 15, 1])
-
-with col_center:
-    query = st.text_input("Search", placeholder="Type a topic (e.g. Gravity)...", label_visibility="collapsed")
+# --- 5. THE SEARCH INPUT (NO COLUMNS) ---
+# We removed st.columns here. 
+# Now it will naturally fill the "95%" width we set in CSS.
+query = st.text_input("Search", placeholder="Type a topic (e.g. Gravity)...", label_visibility="collapsed")
 
 # --- 6. RESULTS LOGIC ---
 if query:
