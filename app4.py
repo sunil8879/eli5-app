@@ -17,7 +17,7 @@ st.markdown("""
         background-color: #FFFFFF;
     }
 
-    /* 2. Text Color: Black */
+    /* 2. Text Color: Black & Readable */
     p, li, .stMarkdown {
         color: #000000 !important;
         font-weight: 600;
@@ -67,7 +67,8 @@ GOOGLE_API_KEY = "AIzaSyCDbYrDJmKoVRhUGKK0hF6fue4Ayg7keKs"
 
 try:
     genai.configure(api_key=GOOGLE_API_KEY)
-    model = genai.GenerativeModel('gemini-flash-latest')
+    # Switched to 1.5-flash for better stability
+    model = genai.GenerativeModel('gemini-1.5-flash')
 except:
     st.error("⚠️ API Key Missing")
 
@@ -108,33 +109,40 @@ if query:
         # TABS
         tab1, tab2 = st.tabs(["📖 THE STORY", "📺 VISUALS"])
 
-        # GENERATE CONTENT
-        prompt = f"Explain '{query}' to a 5-year-old. Use a fun, energetic tone. Use simple analogies. Write roughly 400 words. Split into clear sections with bold headers."
-        response = model.generate_content(prompt)
-        
-        clean_query = query.replace(" ", "-")
-        # Image
-        image_url = f"https://image.pollinations.ai/prompt/3d-render-of-{clean_query}-bright-colors-pixar-style-clean-background-4k"
-        
-        # Video
-        results = YoutubeSearch(query + " for kids", max_results=1).to_dict()
-
-        # TAB 1: TEXT
-        with tab1:
-            st.markdown(response.text)
-
-        # TAB 2: VISUALS
-        with tab2:
-            col_a, col_b = st.columns(2)
+        # GENERATE CONTENT (With Error Handling)
+        try:
+            prompt = f"Explain '{query}' to a 5-year-old. Use a fun, energetic tone. Use simple analogies. Write roughly 400 words. Split into clear sections with bold headers."
+            response = model.generate_content(prompt)
             
-            with col_a:
-                st.markdown("### 🎨 3D Drawing")
-                st.image(image_url, use_container_width=True)
+            # --- SHOW RESULTS ONLY IF SUCCESSFUL ---
+            
+            clean_query = query.replace(" ", "-")
+            image_url = f"https://image.pollinations.ai/prompt/3d-render-of-{clean_query}-bright-colors-pixar-style-clean-background-4k"
+            
+            results = YoutubeSearch(query + " for kids", max_results=1).to_dict()
+
+            # TAB 1: TEXT
+            with tab1:
+                st.markdown(response.text)
+
+            # TAB 2: VISUALS
+            with tab2:
+                col_a, col_b = st.columns(2)
                 
-            with col_b:
-                st.markdown("### 🎥 Explanation Video")
-                if results:
-                    video_id = results[0]['id']
-                    st.video(f"https://www.youtube.com/watch?v={video_id}")
-                else:
-                    st.write("No video found.")
+                with col_a:
+                    st.markdown("### 🎨 3D Drawing")
+                    st.image(image_url, use_container_width=True)
+                    
+                with col_b:
+                    st.markdown("### 🎥 Explanation Video")
+                    if results:
+                        video_id = results[0]['id']
+                        st.video(f"https://www.youtube.com/watch?v={video_id}")
+                    else:
+                        st.write("No video found.")
+                        
+        except Exception as e:
+            # This handles the error nicely instead of crashing
+            st.warning("🚦 The AI is a bit overwhelmed! (Rate Limit Reached).")
+            st.write("Please wait **60 seconds** and try again.")
+            st.error(f"Technical details: {e}")
