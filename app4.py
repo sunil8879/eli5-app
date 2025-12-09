@@ -9,28 +9,29 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- 2. THE DESIGNER CSS (The Magic) ---
+# --- 2. THE DESIGNER CSS ---
 st.markdown("""
     <style>
-    /* 1. BACKGROUND: Aquamarine with a Retro Grid Pattern */
+    /* 1. BACKGROUND: Aquamarine with Retro Grid */
     .stApp {
         background-color: #7FFFD4;
         background-image: 
             linear-gradient(rgba(255,255,255,0.5) 2px, transparent 2px),
             linear-gradient(90deg, rgba(255,255,255,0.5) 2px, transparent 2px);
-        background-size: 40px 40px; /* Makes the grid squares */
+        background-size: 40px 40px; 
     }
 
-    /* 2. JUMBO SEARCH BAR */
+    /* 2. JUMBO SEARCH BAR (FIXED WIDTH) */
     .stTextInput > div > div > input {
-        font-size: 28px !important;  /* Huge Text */
-        height: 70px !important;     /* Tall Box */
-        padding: 10px 20px !important;
+        font-size: 28px !important;
+        height: 70px !important;
+        padding: 10px 25px !important;
         background-color: #FFFFFF !important;
-        border: 4px solid #000000 !important; /* Thick Black Border */
-        border-radius: 50px !important; /* Rounded Pills */
+        border: 4px solid #000000 !important;
+        border-radius: 50px !important;
         box-shadow: 6px 6px 0px rgba(0,0,0,0.2) !important;
         color: #000000 !important;
+        width: 100% !important; /* Forces it to fill the column */
     }
     
     /* 3. HEADERS */
@@ -41,7 +42,7 @@ st.markdown("""
         text-shadow: 3px 3px 0px #FFFFFF;
     }
 
-    /* 4. RESULT CARDS (The white boxes) */
+    /* 4. RESULT CARDS */
     .result-card {
         background-color: #FFFFFF;
         border: 3px solid #000000;
@@ -49,7 +50,7 @@ st.markdown("""
         padding: 25px;
         box-shadow: 8px 8px 0px rgba(0,0,0,0.15);
         color: #000000;
-        font-size: 1.3rem; /* Bigger Font */
+        font-size: 1.3rem; 
         line-height: 1.6;
         margin-bottom: 20px;
     }
@@ -68,13 +69,11 @@ st.markdown("""
         color: black;
     }
     
-    /* Hide the top colored bar */
     header {visibility: hidden;}
     </style>
     """, unsafe_allow_html=True)
 
 # --- 3. API SETUP ---
-# Securely read key from Secrets
 try:
     GOOGLE_API_KEY = st.secrets["GOOGLE_API_KEY"]
     genai.configure(api_key=GOOGLE_API_KEY)
@@ -82,7 +81,7 @@ try:
 except:
     st.error("🚨 API Key not found! Please check your Streamlit Secrets.")
 
-# --- 4. THE LOGO SECTION ---
+# --- 4. THE LOGO ---
 st.markdown("""
     <div style="text-align: center; padding-top: 20px; padding-bottom: 20px;">
         <h1 style="font-size: 100px; margin: 0; line-height: 0.9;">
@@ -104,21 +103,22 @@ st.markdown("""
     </div>
     """, unsafe_allow_html=True)
 
-# --- 5. THE JUMBO SEARCH ---
-# We use columns to center the search bar nicely
-col_left, col_center, col_right = st.columns([1, 6, 1])
+# --- 5. THE SEARCH INPUT (FIXED) ---
+# Previous version was [1, 6, 1]. We changed to [0.5, 12, 0.5] 
+# This gives the center column almost all the space.
+col_left, col_center, col_right = st.columns([1, 15, 1])
 
 with col_center:
     query = st.text_input("Search", placeholder="Type a topic (e.g. Gravity)...", label_visibility="collapsed")
 
-# --- 6. THE RESULTS LOGIC ---
+# --- 6. RESULTS LOGIC ---
 if query:
-    st.write("") # Spacer
+    st.write("") 
     st.write("") 
     
     with st.spinner('🚀 Launching AI Research...'):
         
-        # 1. Get Text
+        # 1. Text
         prompt = f"Explain '{query}' to a 5-year-old. Use a fun, energetic tone. Use simple analogies. Write roughly 400 words. Split into clear sections with bold headers."
         try:
             response = model.generate_content(prompt)
@@ -126,23 +126,20 @@ if query:
         except:
             text_response = "Sorry, I'm having trouble thinking right now. Try again!"
 
-        # 2. Get Image Link
+        # 2. Image
         clean_query = query.replace(" ", "-")
         image_url = f"https://image.pollinations.ai/prompt/3d-render-of-{clean_query}-bright-colors-pixar-style-clean-background-4k-soft-lighting"
         
-        # 3. Get Video
+        # 3. Video
         try:
             results = YoutubeSearch(query + " explanation for kids", max_results=1).to_dict()
         except:
             results = None
 
-        # --- DISPLAY RESULTS ---
-        
-        # We create the tabs
+        # --- DISPLAY ---
         tab1, tab2 = st.tabs(["📖 READ THE STORY", "📺 WATCH & SEE"])
 
         with tab1:
-            # We wrap the text in a custom white card using HTML
             st.markdown(f"""
                 <div class="result-card">
                     {text_response}
