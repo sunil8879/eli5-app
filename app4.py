@@ -64,14 +64,15 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # --- 3. API SETUP ---
+# NOTE: Replace this placeholder key with your actual Gemini API Key
 GOOGLE_API_KEY = "AIzaSyCDbYrDJmKoVRhUGKK0hF6fue4Ayg7keKs" 
 
 try:
     genai.configure(api_key=GOOGLE_API_KEY)
-    # Switched model to 'gemini-pro' to try and bypass the 'flash' quota limit
+    # Using 'gemini-pro' for general explanation tasks
     model = genai.GenerativeModel('gemini-pro')
 except:
-    st.error("⚠️ API Key Missing")
+    st.error("⚠️ API Key Missing or Invalid. Please check the setup.")
 
 # --- 4. THE TILTED LOGO ---
 st.markdown("""
@@ -96,6 +97,26 @@ st.markdown("""
     </div>
     """, unsafe_allow_html=True)
 
+
+# --- 4.5. APP INTRODUCTION (New Section) ---
+st.markdown("""
+    <div style="background-color: #FFFACD; padding: 20px; border-radius: 15px; border: 3px dashed #FF4500; margin-bottom: 40px;">
+        <h2 style="text-align: center; color: #FF4500; text-shadow: none; margin-top: 0;">
+            Welcome to the Simplest Corner of the Internet! 🧠
+        </h2>
+        <p style="text-align: center; color: #000000; font-size: 1.1rem; font-weight: 700;">
+            Have you ever wondered how something works, but all the answers felt like they were written in a secret adult code? 🤯
+        </p>
+        <p style="text-align: center; color: #000000; font-size: 1.1rem; font-weight: 700;">
+            We use the power of AI to break down the biggest ideas—from **Black Holes** to **Bitcoin**—into stories so easy, even a 5-year-old can understand!
+        </p>
+        <p style="text-align: center; color: #000000; font-size: 1.1rem; font-weight: 700;">
+            Just type your topic into the **magical turquoise box** below and prepare for a fun explanation, a cool 3D picture, and a perfect video. Let's learn! 👇
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+
 # --- 5. SEARCH INPUT ---
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
@@ -110,30 +131,33 @@ if query:
         # 1. GENERATE TEXT (With Safety Net)
         text_response = ""
         try:
-            prompt = f"Explain '{query}' to a 5-year-old. Fun tone. 300 words."
+            prompt = f"Explain '{query}' to a 5-year-old. Use a fun, engaging tone. Keep the explanation concise, around 300 words, using simple analogies."
             response = model.generate_content(prompt)
             text_response = response.text
         except Exception as e:
-            # If Google blocks us, we use this Backup Text so the app still looks good
+            # Fallback text if the API fails (e.g., Error 429)
             text_response = f"""
             ### 🚦 High Traffic Alert!
             
-            **Google's AI brain is taking a quick nap** because we made too many requests too fast (Error 429).
+            **Google's AI brain is taking a quick nap** because we made too many requests too fast (Error 429: {e}).
             
             Don't worry! Your **Images** and **Videos** below are still working perfectly. 👇
             
             *(Please wait 60 seconds and search again to get the text back!)*
             """
 
-        # 2. GENERATE IMAGE (No API key needed, always works)
+        # 2. GENERATE IMAGE (Uses the Pollinations API, which is external and free)
         clean_query = query.replace(" ", "-")
         image_url = f"https://image.pollinations.ai/prompt/3d-render-of-{clean_query}-bright-colors-pixar-style-white-background-4k"
         
-        # 3. SEARCH VIDEO (No API key needed, always works)
+        # 3. SEARCH VIDEO (Uses Youtube Search Library)
+        results = None
         try:
+            # Search for videos suitable for kids
             results = YoutubeSearch(query + " for kids", max_results=1).to_dict()
-        except:
-            results = None
+        except Exception as e:
+            # Error handling for the video search itself
+            st.error(f"Video search failed: {e}")
 
         # --- DISPLAY RESULTS ---
         tab1, tab2 = st.tabs(["📖 THE STORY", "📺 VISUALS"])
@@ -148,12 +172,13 @@ if query:
             
             with col_a:
                 st.markdown("### 🎨 3D Drawing")
-                st.image(image_url, use_container_width=True)
+                st.image(image_url, use_container_width=True, caption=f"A 3D image of '{query}'")
                 
             with col_b:
                 st.markdown("### 🎥 Explanation Video")
-                if results:
+                if results and results[0].get('id'):
                     video_id = results[0]['id']
+                    # Use the standard YouTube embed format
                     st.video(f"https://www.youtube.com/watch?v={video_id}")
                 else:
-                    st.write("No video found.")
+                    st.write("No suitable video found.")
