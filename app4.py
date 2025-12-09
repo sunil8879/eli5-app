@@ -21,7 +21,7 @@ st.markdown("""
     p, li, .stMarkdown {
         color: #000000 !important;
         font-weight: 600;
-        font-size: 1.15rem;
+        font-size: 1.5rem;
         line-height: 1.6;
     }
 
@@ -144,3 +144,4 @@ if query:
                 else:
 
                     st.write("No video found.")
+
