@@ -12,12 +12,12 @@ st.set_page_config(
 # --- 2. CUSTOM CSS ---
 st.markdown("""
     <style>
-    /* 1. Main Background: Aquamarine */
+    /* 1. Main Background: WHITE */
     .stApp {
-        background-color: #7FFFD4;
+        background-color: #FFFFFF;
     }
 
-    /* 2. Text Color: Black & Readable */
+    /* 2. Text Color: Black */
     p, li, .stMarkdown {
         color: #000000 !important;
         font-weight: 600;
@@ -25,30 +25,40 @@ st.markdown("""
         line-height: 1.6;
     }
 
-    /* 3. HEADERS: Clean 3D Bevel */
+    /* 3. HEADERS: Clean 3D Look */
     h1, h2, h3 {
         color: #000000 !important;
         font-family: 'Verdana', sans-serif;
         font-weight: 900;
         letter-spacing: 0.5px;
-        text-shadow: 2px 2px 0px #FFFFFF; 
+        text-shadow: 2px 2px 0px #CCCCCC; /* Light gray shadow for white bg */
     }
 
-    /* 4. Search Bar: Clean White Box */
+    /* 4. SEARCH BOX: TURQUOISE & JUMBO SIZE */
     .stTextInput > div > div > input {
-        background-color: #FFFFFF !important;
-        color: #000000 !important;
-        font-weight: bold;
-        border: 2px solid #000000;
-        border-radius: 12px;
-        box-shadow: 4px 4px 0px rgba(0,0,0,0.2); 
+        background-color: #40E0D0 !important; /* Turquoise Color */
+        color: #000000 !important;             /* Black Font */
+        font-weight: 900 !important;           /* Extra Bold */
+        font-size: 28px !important;            /* Big Font */
+        height: 70px !important;               /* Tall Box */
+        padding: 10px 20px !important;
+        border: 4px solid #000000 !important;  /* Thick Black Border */
+        border-radius: 20px;
+        box-shadow: 5px 5px 0px rgba(0,0,0,0.2); 
+    }
+    
+    /* Change the placeholder text color (so it's visible on Turquoise) */
+    ::placeholder {
+        color: rgba(0,0,0,0.6) !important;
+        font-weight: normal;
     }
     
     /* 5. Tabs styling */
     .stTabs [data-baseweb="tab-list"] {
-        background-color: rgba(255,255,255, 0.5);
+        background-color: #F0F0F0;
         border-radius: 15px;
         padding: 10px;
+        border: 2px solid black;
     }
     .stTabs [data-baseweb="tab"] {
         color: #000000;
@@ -64,7 +74,6 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # --- 3. API SETUP ---
-# Securely read the key from Streamlit Cloud Secrets
 try:
     GOOGLE_API_KEY = st.secrets["GOOGLE_API_KEY"]
     genai.configure(api_key=GOOGLE_API_KEY)
@@ -72,22 +81,22 @@ try:
 except:
     st.error("⚠️ API Key Missing! Check your Streamlit Secrets.")
 
-# --- 4. THE TILTED LOGO (Added Here) ---
+# --- 4. THE TILTED LOGO ---
 st.markdown("""
-    <div style="text-align: center; margin-bottom: 30px;">
-        <h1 style="font-size: 90px; margin: 0; line-height: 0.9;">
+    <div style="text-align: center; margin-bottom: 40px;">
+        <h1 style="font-size: 100px; margin: 0; line-height: 0.9;">
             ELI<span style="color: #FF4500;">5</span>
         </h1>
         <div style="
             background-color: #000000; 
             color: white; 
             display: inline-block; 
-            padding: 10px 30px; 
-            font-size: 20px; 
+            padding: 12px 35px; 
+            font-size: 24px; 
             font-weight: bold; 
             border-radius: 50px; 
-            box-shadow: 4px 4px 0px #FFFFFF;
-            transform: rotate(-3deg); /* THIS MAKES IT TILTED */
+            box-shadow: 4px 4px 0px #CCCCCC;
+            transform: rotate(-3deg);
             margin-top: 10px;
         ">
             INTERNATIONAL EDITION 🌏
@@ -95,13 +104,12 @@ st.markdown("""
     </div>
     """, unsafe_allow_html=True)
 
-# --- 5. SEARCH INPUT (Fixed Width) ---
-# I changed [1, 2, 1] to [1, 10, 1]. 
-# This makes the middle column much wider, so the search bar fills 80-90% of the screen.
+# --- 5. SEARCH INPUT ---
+# Using the Wide Columns [1, 10, 1] logic so it fills the screen well
 col1, col2, col3 = st.columns([1, 10, 1])
 
 with col2:
-    query = st.text_input("Search Topic:", placeholder="e.g. Gravity, Moon, Money...", label_visibility="collapsed")
+    query = st.text_input("Search Topic:", placeholder="Type here (e.g. Gravity)...", label_visibility="collapsed")
 
 # --- 6. LOGIC ---
 if query:
@@ -118,7 +126,7 @@ if query:
         
         clean_query = query.replace(" ", "-")
         # Image
-        image_url = f"https://image.pollinations.ai/prompt/3d-render-of-{clean_query}-bright-colors-pixar-style-clean-background-4k"
+        image_url = f"https://image.pollinations.ai/prompt/3d-render-of-{clean_query}-bright-colors-pixar-style-white-background-4k"
         
         # Video
         results = YoutubeSearch(query + " for kids", max_results=1).to_dict()
