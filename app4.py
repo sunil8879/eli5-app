@@ -1,11 +1,12 @@
 import streamlit as st
 import google.generativeai as genai
 from youtube_search import YoutubeSearch
+from google.api_core.exceptions import ResourceExhausted
 
 # --- 1. PAGE CONFIGURATION ---
 st.set_page_config(
-    page_title="ELI5 Pro",
-    page_icon="🧠",
+    page_title="ELI5 International",
+    page_icon="🌏",
     layout="wide"
 )
 
@@ -17,7 +18,7 @@ st.markdown("""
         background-color: #FFFFFF;
     }
 
-    /* 2. Text Color: Black & Readable */
+    /* 2. Text Color: Black */
     p, li, .stMarkdown {
         color: #000000 !important;
         font-weight: 600;
@@ -46,9 +47,10 @@ st.markdown("""
     
     /* 5. Tabs styling */
     .stTabs [data-baseweb="tab-list"] {
-        background-color: rgba(255,255,255, 0.5);
+        background-color: #F0F0F0;
         border-radius: 15px;
         padding: 10px;
+        border: 2px solid black;
     }
     .stTabs [data-baseweb="tab"] {
         color: #000000;
@@ -67,12 +69,12 @@ GOOGLE_API_KEY = "AIzaSyCDbYrDJmKoVRhUGKK0hF6fue4Ayg7keKs"
 
 try:
     genai.configure(api_key=GOOGLE_API_KEY)
-    # Switched to 1.5-flash for better stability
+    # Using 1.5-flash as it is more stable for free tier
     model = genai.GenerativeModel('gemini-1.5-flash')
 except:
-    st.error("⚠️ API Key Missing")
+    st.error("⚠️ API Key Error")
 
-# --- 4. THE TILTED LOGO (International Edition) ---
+# --- 4. THE TILTED LOGO ---
 st.markdown("""
     <div style="text-align: center; margin-bottom: 30px;">
         <h1 style="font-size: 90px; margin: 0; line-height: 0.9;">
@@ -96,7 +98,7 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # --- 5. SEARCH INPUT ---
-col1, col2, col3 = st.columns([1, 2, 1])
+col1, col2, col3 = st.columns([1, 10, 1])
 with col2:
     query = st.text_input("Search Topic:", placeholder="e.g. Gravity, Moon, Money...", label_visibility="collapsed")
 
@@ -106,24 +108,25 @@ if query:
     
     with st.spinner('⚡ Brainstorming...'):
         
-        # TABS
-        tab1, tab2 = st.tabs(["📖 THE STORY", "📺 VISUALS"])
-
-        # GENERATE CONTENT (With Error Handling)
+        # We try to generate the text. If Google says "Stop", we handle it gracefully.
         try:
             prompt = f"Explain '{query}' to a 5-year-old. Use a fun, energetic tone. Use simple analogies. Write roughly 400 words. Split into clear sections with bold headers."
             response = model.generate_content(prompt)
+            final_text = response.text
             
-            # --- SHOW RESULTS ONLY IF SUCCESSFUL ---
+            # If text generation worked, we proceed to Image & Video
             
             clean_query = query.replace(" ", "-")
-            image_url = f"https://image.pollinations.ai/prompt/3d-render-of-{clean_query}-bright-colors-pixar-style-clean-background-4k"
+            image_url = f"https://image.pollinations.ai/prompt/3d-render-of-{clean_query}-bright-colors-pixar-style-white-background-4k"
             
             results = YoutubeSearch(query + " for kids", max_results=1).to_dict()
 
+            # TABS
+            tab1, tab2 = st.tabs(["📖 THE STORY", "📺 VISUALS"])
+
             # TAB 1: TEXT
             with tab1:
-                st.markdown(response.text)
+                st.markdown(final_text)
 
             # TAB 2: VISUALS
             with tab2:
@@ -140,9 +143,11 @@ if query:
                         st.video(f"https://www.youtube.com/watch?v={video_id}")
                     else:
                         st.write("No video found.")
-                        
+        
+        except ResourceExhausted:
+            st.warning("🚦 Whoops! Too many people are learning right now.")
+            st.write("Google's AI brain is taking a short nap. **Please wait 1 minute and try again.**")
+            
         except Exception as e:
-            # This handles the error nicely instead of crashing
-            st.warning("🚦 The AI is a bit overwhelmed! (Rate Limit Reached).")
-            st.write("Please wait **60 seconds** and try again.")
-            st.error(f"Technical details: {e}")
+            st.error("Something went wrong. Please try again later.")
+            st.write(e)
