@@ -21,52 +21,45 @@ st.markdown("""
     p, li, .stMarkdown {
         color: #000000 !important;
         font-weight: 600;
-        font-size: 1.15rem;
+        font-size: 1.1rem;
         line-height: 1.6;
     }
 
-    /* 3. HEADERS: Clean 3D Look */
+    /* 3. HEADERS */
     h1, h2, h3 {
         color: #000000 !important;
         font-family: 'Verdana', sans-serif;
         font-weight: 900;
-        letter-spacing: 0.5px;
-        text-shadow: 2px 2px 0px #CCCCCC; /* Light gray shadow for white bg */
+        text-shadow: 2px 2px 0px #CCCCCC; 
     }
 
-    /* 4. SEARCH BOX: TURQUOISE & JUMBO SIZE */
+    /* 4. SEARCH BOX: TURQUOISE (Standard Size) */
     .stTextInput > div > div > input {
-        background-color: #40E0D0 !important; /* Turquoise Color */
-        color: #000000 !important;             /* Black Font */
-        font-weight: 900 !important;           /* Extra Bold */
-        font-size: 28px !important;            /* Big Font */
-        height: 70px !important;               /* Tall Box */
-        padding: 10px 20px !important;
-        border: 4px solid #000000 !important;  /* Thick Black Border */
-        border-radius: 20px;
-        box-shadow: 5px 5px 0px rgba(0,0,0,0.2); 
+        background-color: #40E0D0 !important; /* Turquoise */
+        color: #000000 !important;             /* Black Text */
+        font-weight: bold !important;
+        border: 2px solid #000000 !important;  /* Black Border */
+        border-radius: 10px;
+        box-shadow: 3px 3px 0px rgba(0,0,0,0.2);
     }
     
-    /* Change the placeholder text color (so it's visible on Turquoise) */
+    /* Placeholder color */
     ::placeholder {
         color: rgba(0,0,0,0.6) !important;
-        font-weight: normal;
     }
     
     /* 5. Tabs styling */
     .stTabs [data-baseweb="tab-list"] {
         background-color: #F0F0F0;
         border-radius: 15px;
-        padding: 10px;
+        padding: 5px;
         border: 2px solid black;
     }
     .stTabs [data-baseweb="tab"] {
         color: #000000;
         font-weight: 800;
-        font-size: 1.2rem;
     }
     
-    /* 6. Logo Spacing */
     .block-container {
         padding-top: 2rem;
     }
@@ -81,21 +74,21 @@ try:
 except:
     st.error("⚠️ API Key Missing! Check your Streamlit Secrets.")
 
-# --- 4. THE TILTED LOGO ---
+# --- 4. THE LOGO ---
 st.markdown("""
-    <div style="text-align: center; margin-bottom: 40px;">
-        <h1 style="font-size: 100px; margin: 0; line-height: 0.9;">
+    <div style="text-align: center; margin-bottom: 30px;">
+        <h1 style="font-size: 90px; margin: 0; line-height: 0.9;">
             ELI<span style="color: #FF4500;">5</span>
         </h1>
         <div style="
             background-color: #000000; 
             color: white; 
             display: inline-block; 
-            padding: 12px 35px; 
-            font-size: 24px; 
+            padding: 8px 25px; 
+            font-size: 20px; 
             font-weight: bold; 
             border-radius: 50px; 
-            box-shadow: 4px 4px 0px #CCCCCC;
+            box-shadow: 3px 3px 0px #CCCCCC;
             transform: rotate(-3deg);
             margin-top: 10px;
         ">
@@ -104,12 +97,12 @@ st.markdown("""
     </div>
     """, unsafe_allow_html=True)
 
-# --- 5. SEARCH INPUT ---
-# Using the Wide Columns [1, 10, 1] logic so it fills the screen well
-col1, col2, col3 = st.columns([1, 10, 1])
+# --- 5. SEARCH INPUT (WIDE) ---
+# [1, 15, 1] ensures the search bar is WIDE (not 50%) but has tiny margins
+col1, col2, col3 = st.columns([1, 15, 1])
 
 with col2:
-    query = st.text_input("Search Topic:", placeholder="Type here (e.g. Gravity)...", label_visibility="collapsed")
+    query = st.text_input("Search Topic:", placeholder="e.g. Gravity...", label_visibility="collapsed")
 
 # --- 6. LOGIC ---
 if query:
@@ -125,10 +118,8 @@ if query:
         response = model.generate_content(prompt)
         
         clean_query = query.replace(" ", "-")
-        # Image
         image_url = f"https://image.pollinations.ai/prompt/3d-render-of-{clean_query}-bright-colors-pixar-style-white-background-4k"
         
-        # Video
         results = YoutubeSearch(query + " for kids", max_results=1).to_dict()
 
         # TAB 1: TEXT
