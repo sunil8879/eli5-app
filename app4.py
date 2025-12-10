@@ -11,18 +11,61 @@ st.set_page_config(
 
 # --- CATEGORY DEFINITIONS ---
 SUB_CATEGORIES = {
-    "Science": ["Gravity", "Photosynthesis", "Black Holes", "Microbes/Germs", "Evolution"],
-    "History": ["Roman Empire", "Ancient Egypt", "Medieval Castles", "World War II", "Local History (Custom)"],
-    "Technology": ["Artificial Intelligence (AI)", "Robotics", "How Computers Work", "Blockchain", "Bluetooth"],
-    "Geography": ["Volcanoes", "Deserts", "The North Pole", "Ocean Trenches", "Ecosystems"],
-    "Polity/Government": ["Democracy", "What is a Constitution", "Elections", "Taxes", "The UN"],
-    "Computers": ["How CPUs work", "The Internet", "Coding/Programming", "Operating Systems", "Cyber Security"],
-    "Animals": ["Whales", "Insects", "Dinosaurs", "Mammals", "Endangered Species"],
-    "Everyday Concepts": ["Money", "Time", "Electricity", "Magnets", "Mirrors"],
-    "Emotions": ["Happiness", "Sadness", "Fear", "Anger","sympathy", "Empathy"]
+    "Science": [
+        "Gravity", "Photosynthesis", "Black Holes", "Microbes/Germs", "Evolution",
+        "Atoms and Molecules", "The Human Heart", "Vaccines", "Sound Waves", "Light"
+    ],
+    "Technology": [
+        "Artificial Intelligence (AI)", "Robotics", "How Computers Work", "Blockchain",
+        "Virtual Reality (VR)", "3D Printing", "Social Media", "Bluetooth", 
+        "Self-Driving Cars", "Algorithms"
+    ],
+    "History": [
+        "The Roman Empire", "Ancient Egypt", "Medieval Castles", "World War II", 
+        "The Dinosaurs (Extinction)", "The First Moon Landing", "How Fire Was Discovered", 
+        "The Titanic", "The Great Wall of China", "Famous Explorers"
+    ],
+    "Geography": [
+        "Volcanoes", "Deserts", "The North Pole", "Ocean Trenches", "Earthquakes", 
+        "Rivers and Lakes", "Mountains", "The Seven Continents", "Maps and Globes", "Tides"
+    ],
+    "Polity/Government": [
+        "Democracy", "What is a Constitution", "Elections", "Taxes", "The United Nations (UN)", 
+        "Laws and Rules", "The Police", "Citizenship", "The President/Prime Minister", "The Flag"
+    ],
+    "Computers": [
+        "How CPUs work", "The Internet", "Coding/Programming", "Operating Systems", 
+        "Cyber Security", "Viruses and Malware", "The Cloud", "Data Storage (Memory)", 
+        "Computer Games", "Apps"
+    ],
+    "Animals": [
+        "Whales", "Insects", "Dinosaurs", "Mammals", "Endangered Species", 
+        "Birds (Feathers and Flight)", "Reptiles", "Pet Care", "Camouflage", 
+        "Animal Communication"
+    ],
+    "Everyday Concepts": [
+        "Money", "Time", "Electricity", "Magnets", "Reflections (Mirrors)", 
+        "How Cars Move", "Why We Need Sleep", "Traffic Lights", "Recycling", "Batteries"
+    ],
+    "Emotions": [
+        "Happiness", "Sadness", "Fear", "Anger", "Empathy", "Dreams", 
+        "Memory", "Shyness", "Being Brave", "Kindness"
+    ],
+    "Space & Astronomy": [
+        "The Sun", "The Moon", "Stars", "Galaxies", "Astronauts", "Comets and Meteors", 
+        "Mars", "Jupiter (Giant Planet)", "Seasons", "Telescopes"
+    ],
+    "Art & Culture": [
+        "Music and Instruments", "Painting", "Sculptures", "Poetry", "Different Languages", 
+        "Theatre", "Festivals", "Sports Rules", "Why People Wear Different Clothes", "Storytelling"
+    ],
+    "Health & Body": [
+        "Bones and Muscles", "Eating Healthy Food", "Breathing", "Why We Get Sick", 
+        "Doctors and Hospitals", "Brushing Teeth", "The Brain", "Exercise", "Allergies", "Blood"
+    ]
 }
 
-# --- 2. CUSTOM CSS (FIXED HEIGHT) ---
+# --- 2. CUSTOM CSS (FIXED HEIGHT AND AQUAMARINE SELECTBOXES) ---
 st.markdown("""
     <style>
     /* 1. Main Background: WHITE */
@@ -46,12 +89,12 @@ st.markdown("""
         letter-spacing: 0.5px;
         text-shadow: 2px 2px 0px #CCCCCC; 
     }
-
+    
     /* 4. Search Bar: TURQUOISE */
     
     /* FIX 1: Increase the overall height allocated to the widget container */
     .stTextInput > div {
-        min-height: 85px; /* Must be slightly larger than the input height (70px) */
+        min-height: 85px; 
     }
 
     /* FIX 2: Style and size the actual input element */
@@ -67,7 +110,18 @@ st.markdown("""
         padding: 15px; /* Add vertical padding */
     }
     
-    /* 5. Tabs styling */
+    /* 5. Selectbox Styles (AQUAMARINE) */
+    .stSelectbox > label,
+    .stSelectbox > div > button,
+    .stSelectbox > div[data-baseweb="select"] > div {
+        background-color: #7FFFD4 !important; /* Aquamarine */
+        border: 1px solid #000000;
+        border-radius: 8px;
+        font-weight: bold;
+        color: #000000 !important; /* Ensure black text */
+    }
+    
+    /* 6. Tabs styling */
     .stTabs [data-baseweb="tab-list"] {
         background-color: rgba(255,255,255, 0.5);
         border-radius: 15px;
@@ -87,7 +141,6 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # --- 3. API SETUP ---
-# NOTE: Using st.secrets is crucial for security
 try:
     GOOGLE_API_KEY = st.secrets["google_api_key"]
 except KeyError:
@@ -96,7 +149,7 @@ except KeyError:
 
 try:
     genai.configure(api_key=GOOGLE_API_KEY)
-    # Using 'gemini-2.5-flash' for stability and speed
+    # Using the stable and efficient 'gemini-2.5-flash'
     model = genai.GenerativeModel('gemini-2.5-flash')
 except Exception as e:
     st.error(f"⚠️ API Key configuration failed: {e}")
@@ -127,21 +180,26 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 
-# --- 4.5. APP INTRODUCTION ---
-# Changed H2 color back to White for better contrast on Blue box
+# --- 4.5. APP INTRODUCTION (Revised and Fixed Section) ---
 st.markdown("""
     <div style="background-color: #1877F2; padding: 20px; border-radius: 15px; border: 3px dashed #FF4500; margin-bottom: 40px;">
+        
         <h2 style="text-align: center; color: #FFFFFF; text-shadow: none; margin-top: 0;">
-            Welcome to the Simplest Corner of the Internet! 🧠
+            Welcome to ELI5 - EXPLAIN LIKE I AM 5! 🧠
         </h2>
+        
+        <h3 style="text-align: center; color: #FFFFFF; text-shadow: none; margin-bottom: 20px; margin-top: -10px;">
+            (FOR KIDS LEARNING & DEVELOPMENT)
+        </h3>
+        
         <p style="text-align: center; color: #FFFFFF; font-size: 1.1rem; font-weight: 700;">
-            Have you ever wondered how something works, but all the answers felt like they were written in a secret adult code? 🤯
+            Have you ever wondered how something works, but all the answers felt like they were written in a secret adult code? 🤯 We are here to help!
         </p>
         <p style="text-align: center; color: #FFFFFF; font-size: 1.1rem; font-weight: 700;">
             We use the power of AI to break down the biggest ideas—from **Black Holes** to **Bitcoin**—into stories so easy, even a 5-year-old can understand!
         </p>
         <p style="text-align: center; color: #FFFFFF; font-size: 1.1rem; font-weight: 700;">
-            Just type your topic into the **magical turquoise box** below and prepare for a fun explanation, a cool 3D picture, and a perfect video. Let's learn! 👇
+            Start by telling us if you want to **Search** or **Choose** your topic below. Let's learn! 👇
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -208,7 +266,6 @@ if query:
         text_response = ""
         try:
             # Modified prompt to include the category for better context
-            # Increased word count is kept at 500 as per your last modification
             prompt = f"Explain '{query}' as it relates to {category} to a 5-year-old. Use a fun, engaging tone. Keep the explanation concise, around 500 words, using simple analogies."
             response = model.generate_content(prompt)
             text_response = response.text
@@ -217,7 +274,7 @@ if query:
             error_message = str(e)
             
             if 'Quota exceeded' in error_message:
-                detail = "We've hit our usage limit for a few moments (Free Tier restriction)."
+                detail = "We've hit our usage limit for a few moments (Free Tier restriction). Try again in 30 minutes."
             else:
                 detail = "The AI brain is temporarily busy or resting. Check your API key security if this persists."
                 
@@ -240,7 +297,7 @@ if query:
         try:
             results = YoutubeSearch(query + " for kids", max_results=1).to_dict()
         except Exception:
-            pass # Fail silently if Youtube search fails
+            pass 
 
         # --- DISPLAY RESULTS ---
         tab1, tab2 = st.tabs(["📖 THE STORY", "📺 VISUALS"])
