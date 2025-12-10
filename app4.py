@@ -9,23 +9,6 @@ st.set_page_config(
     layout="wide"
 )
 
-# Initialize session state for query translation cache
-if 'translation_cache' not in st.session_state:
-    st.session_state['translation_cache'] = {}
-
-
-# --- LANGUAGE DEFINITIONS ---
-LANGUAGES = {
-    "English": {"name": "English", "code": "en"},
-    "Hindi (हिंदी)": {"name": "Hindi", "code": "hi"},
-    "Gujarati (ગુજરાતી)": {"name": "Gujarati", "code": "gu"},
-    "Spanish (Español)": {"name": "Spanish", "code": "es"},
-    "French (Français)": {"name": "French", "code": "fr"},
-    "Mandarin (普通话)": {"name": "Mandarin Chinese", "code": "zh"},
-    "German (Deutsch)": {"name": "German", "code": "de"},
-    "Japanese (日本語)": {"name": "Japanese", "code": "ja"}
-}
-
 # --- CATEGORY DEFINITIONS ---
 SUB_CATEGORIES = {
     "Science": [
@@ -82,7 +65,7 @@ SUB_CATEGORIES = {
     ]
 }
 
-# --- 2. CUSTOM CSS (FIXED HEIGHT AND AQUAMARINE SELECTBOXES) ---
+# --- 2. CUSTOM CSS (VISUALS REMAIN THE SAME) ---
 st.markdown("""
     <style>
     /* 1. Main Background: WHITE */
@@ -169,36 +152,6 @@ except Exception as e:
     st.stop()
 
 
-# --- MULTILINGUAL QUERY GENERATION FUNCTION (CACHED) ---
-def generate_youtube_query(topic, category, language_name, model):
-    if language_name == "English":
-        return f"{topic} {category} educational video for kids"
-    
-    cache_key = f"youtube_query_{topic}_{category}_{language_name}"
-    if cache_key in st.session_state:
-        return st.session_state[cache_key]
-        
-    # The ultimate prompt: ask the AI to generate the perfect, strict search string.
-    prompt = (
-        f"You are a YouTube search expert. Generate the best possible search query "
-        f"to find a highly relevant educational video about the topic '{topic}' "
-        f"in the category '{category}'. "
-        f"The search query must be strictly in **{language_name}** and targeted "
-        f"at children's education. Output ONLY the search query string, nothing else. "
-        f"Example for French: 'Les volcans geographie video éducative pour enfants'"
-    )
-    try:
-        response = model.generate_content(prompt)
-        # Clean up the output string rigorously
-        search_query = response.text.strip().replace('"', '').replace("'", '').split('\n')[0].strip()
-        st.session_state[cache_key] = search_query
-        return search_query
-    except Exception:
-        # Fallback to English search terms if AI generation fails (quota issue, etc.)
-        st.session_state[cache_key] = f"{topic} {category} educational video for kids"
-        return st.session_state[cache_key]
-
-
 # --- 4. THE TILTED LOGO ---
 st.markdown("""
     <div style="text-align: center; margin-bottom: 30px;">
@@ -217,13 +170,13 @@ st.markdown("""
             transform: rotate(-3deg);
             margin-top: 10px;
         ">
-            INTERNATIONAL EDITION 🌏
+            ENGLISH EDITION 🇬🇧
         </div>
     </div>
     """, unsafe_allow_html=True)
 
 
-# --- 4.5. APP INTRODUCTION (Revised and Fixed Section) ---
+# --- 4.5. APP INTRODUCTION (Final Simplified Title) ---
 html_intro = '<div style="background-color: #1877F2; padding: 20px; border-radius: 15px; border: 3px dashed #FF4500; margin-bottom: 40px;">'
 html_intro += '<h2 style="text-align: center; color: #FFFFFF; text-shadow: none; margin-top: 0;">Welcome to ELI5 - EXPLAIN LIKE I AM 5! 🧠</h2>'
 html_intro += '<h3 style="text-align: center; color: #FFFFFF; text-shadow: none; margin-bottom: 20px; margin-top: -10px;">(FOR KIDS LEARNING & DEVELOPMENT)</h3>'
@@ -255,7 +208,7 @@ st.sidebar.markdown(
 st.sidebar.markdown("---")
 
 
-# --- 5. SEARCH INPUT & CATEGORY LOGIC (New Branching System with Language) ---
+# --- 5. SEARCH INPUT & CATEGORY LOGIC (English-Only Flow) ---
 
 # Initialize variables to avoid NameError if user doesn't interact
 query = None
@@ -265,14 +218,7 @@ col1, col2, col3 = st.columns([1, 2, 1])
 
 with col2:
     
-    # LANGUAGE SELECTOR
-    selected_language = st.selectbox(
-        "Select Language for Explanation:",
-        options=list(LANGUAGES.keys()),
-        index=0,
-        key="language_select"
-    )
-    st.write("---") 
+    # NOTE: LANGUAGE SELECTION IS REMOVED FOR STABILITY
     
     # Initial choice: Search OR Choose
     mode = st.radio(
@@ -287,7 +233,7 @@ with col2:
     if mode == "Search Any Topic":
         # PATH 1: Direct Search Bar
         query = st.text_input("Enter your topic:", placeholder="e.g. Gravity, Moon, Money...", label_visibility="collapsed")
-        category = "General Knowledge" # Use default category for the prompt
+        category = "General Knowledge" 
         
     elif mode == "Choose Specific Category":
         # PATH 2: Guided Selection
@@ -320,19 +266,18 @@ with col2:
 if query:
     st.write("---") 
     
-    # Get the language data
-    lang_data = LANGUAGES[selected_language]
-    language_keyword = lang_data["name"]
+    # Set language to English since localization is removed
+    language_keyword = "English"
     
-    with st.spinner(f'⚡ Brainstorming in {language_keyword}...'):
+    with st.spinner('⚡ Brainstorming in English...'):
         
         # 1. GENERATE TEXT (With Safety Net)
         text_response = ""
         try:
-            # TEXT GENERATION: Use original English query for maximum context and clarity
+            # PROMPT: Simple English generation
             prompt = (
                 f"Explain '{query}' (Category: {category}) to a 5-year-old. "
-                f"Generate the entire explanation in **{language_keyword}**. "
+                f"Generate the entire explanation in **English**. "
                 f"Use a fun, engaging tone. Keep the explanation concise, around 500 words, using simple analogies."
             )
             response = model.generate_content(prompt)
@@ -360,22 +305,17 @@ if query:
         clean_query = query.replace(" ", "-")
         image_url = f"https://image.pollinations.ai/prompt/3d-render-of-{clean_query}-bright-colors-pixar-style-white-background-4k"
         
-        # 3. SEARCH VIDEO (ULTIMATE LOCALIZATION FIX)
+        # 3. SEARCH VIDEO (STABLE ENGLISH SEARCH with Safety Keywords)
         results = None
         try:
-            # Step 1: Generate the PERFECT localized YouTube search string using the AI
-            video_search_query = generate_youtube_query(query, category, language_keyword, model)
+            # Final stable search query using safety keywords
+            video_search_query = f"{query} {category} educational video for kids safe mode child lock"
             
-            # Step 2: Execute search
+            # Note: We rely on YouTube's internal filtering for safety now
             results = YoutubeSearch(video_search_query, max_results=1).to_dict()
         
         except Exception:
-            # If the highly localized search fails, try a simple English fallback
-            try:
-                results = YoutubeSearch(f"{query} educational video for kids", max_results=1).to_dict()
-                st.warning(f"Could not find a highly specific video in {language_keyword}. Showing a general education video.")
-            except:
-                pass 
+            pass 
 
         # --- DISPLAY RESULTS ---
         tab1, tab2 = st.tabs(["📖 THE STORY", "📺 VISUALS"])
@@ -398,4 +338,4 @@ if query:
                     video_id = results[0]['id']
                     st.video(f"https://www.youtube.com/watch?v={video_id}")
                 else:
-                    st.write(f"No suitable video found related to {language_keyword}. Try a simple search topic.")
+                    st.write("No suitable video found.")
