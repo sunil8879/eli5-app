@@ -16,14 +16,14 @@ if 'translation_cache' not in st.session_state:
 
 # --- LANGUAGE DEFINITIONS ---
 LANGUAGES = {
-    "English": {"name": "English", "code": "en", "suffix": "for children"},
-    "Hindi (हिंदी)": {"name": "Hindi", "code": "hi", "suffix": "बच्चों के लिए"},
-    "Gujarati (ગુજરાતી)": {"name": "Gujarati", "code": "gu", "suffix": "બાળકો માટે"},
-    "Spanish (Español)": {"name": "Spanish", "code": "es", "suffix": "para niños"},
-    "French (Français)": {"name": "French", "code": "fr", "suffix": "pour enfants"},
-    "Mandarin (普通话)": {"name": "Mandarin Chinese", "code": "zh", "suffix": "给孩子们"},
-    "German (Deutsch)": {"name": "German", "code": "de", "suffix": "für kinder"},
-    "Japanese (日本語)": {"name": "Japanese", "code": "ja", "suffix": "子供向け"}
+    "English": {"name": "English", "code": "en"},
+    "Hindi (हिंदी)": {"name": "Hindi", "code": "hi"},
+    "Gujarati (ગુજરાતી)": {"name": "Gujarati", "code": "gu"},
+    "Spanish (Español)": {"name": "Spanish", "code": "es"},
+    "French (Français)": {"name": "French", "code": "fr"},
+    "Mandarin (普通话)": {"name": "Mandarin Chinese", "code": "zh"},
+    "German (Deutsch)": {"name": "German", "code": "de"},
+    "Japanese (日本語)": {"name": "Japanese", "code": "ja"}
 }
 
 # --- CATEGORY DEFINITIONS ---
@@ -169,27 +169,34 @@ except Exception as e:
     st.stop()
 
 
-# --- MULTILINGUAL TRANSLATION FUNCTION (CACHED) ---
-def translate_query_for_search(query, target_language_name, model):
-    if target_language_name == "English":
-        return query
+# --- MULTILINGUAL QUERY GENERATION FUNCTION (CACHED) ---
+def generate_youtube_query(topic, category, language_name, model):
+    if language_name == "English":
+        return f"{topic} {category} educational video for kids"
     
-    # Use session state cache key
-    cache_key = f"translation_{query}_{target_language_name}"
+    cache_key = f"youtube_query_{topic}_{category}_{language_name}"
     if cache_key in st.session_state:
         return st.session_state[cache_key]
         
-    # Prompt the AI ONLY for the translated topic name
-    prompt = f"Provide ONLY the single best translated topic name for '{query}' into {target_language_name}. Do not include any surrounding text, quotes, or explanations."
+    # The ultimate prompt: ask the AI to generate the perfect, strict search string.
+    prompt = (
+        f"You are a YouTube search expert. Generate the best possible search query "
+        f"to find a highly relevant educational video about the topic '{topic}' "
+        f"in the category '{category}'. "
+        f"The search query must be strictly in **{language_name}** and targeted "
+        f"at children's education. Output ONLY the search query string, nothing else. "
+        f"Example for French: 'Les volcans geographie video éducative pour enfants'"
+    )
     try:
         response = model.generate_content(prompt)
-        translated_topic = response.text.strip().replace('"', '').replace("'", '').split('\n')[0].strip()
-        st.session_state[cache_key] = translated_topic
-        return translated_topic
+        # Clean up the output string rigorously
+        search_query = response.text.strip().replace('"', '').replace("'", '').split('\n')[0].strip()
+        st.session_state[cache_key] = search_query
+        return search_query
     except Exception:
-        # Fallback to the original English query if translation fails
-        st.session_state[cache_key] = query
-        return query
+        # Fallback to English search terms if AI generation fails (quota issue, etc.)
+        st.session_state[cache_key] = f"{topic} {category} educational video for kids"
+        return st.session_state[cache_key]
 
 
 # --- 4. THE TILTED LOGO ---
@@ -228,17 +235,17 @@ html_intro += '</div>'
 st.markdown(html_intro, unsafe_allow_html=True)
 
 # --- 4.6. MONETIZATION / DONATION BUTTON ---
-BMC_LINK = "https://buymeacoffee.com/sunilvasarkar"  # <<< IMPORTANT: REPLACE THIS LINK
+BMC_LINK = "https://www.buymeacoffee.com/sunilvasarkar"
 
 st.sidebar.markdown("---")
 st.sidebar.markdown(
-    """
+    f"""
     <div style="text-align: center; padding: 10px; border-radius: 10px; background-color: #FFEEAA; border: 2px dashed #D3A500;">
         <h3 style="color: #000000; text-shadow: none; margin-bottom: 5px;">Enjoying ELI5 Pro?</h3>
         <p style="font-size: 1rem; color: #000000; font-weight: 500;">
             Help keep the AI brain running and buy the developer a coffee! ☕
         </p>
-        <a href="https://buymeacoffee.com/sunilvasarkar" target="_blank">
+        <a href="{BMC_LINK}" target="_blank">
             <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 45px !important;width: 162px !important;" >
         </a>
     </div>
@@ -320,9 +327,9 @@ if query:
     with st.spinner(f'⚡ Brainstorming in {language_keyword}...'):
         
         # 1. GENERATE TEXT (With Safety Net)
-        # Use the original English query for text prompt clarity
         text_response = ""
         try:
+            # TEXT GENERATION: Use original English query for maximum context and clarity
             prompt = (
                 f"Explain '{query}' (Category: {category}) to a 5-year-old. "
                 f"Generate the entire explanation in **{language_keyword}**. "
@@ -353,22 +360,20 @@ if query:
         clean_query = query.replace(" ", "-")
         image_url = f"https://image.pollinations.ai/prompt/3d-render-of-{clean_query}-bright-colors-pixar-style-white-background-4k"
         
-        # 3. SEARCH VIDEO (Highly Localized using both English and Suffix)
+        # 3. SEARCH VIDEO (ULTIMATE LOCALIZATION FIX)
         results = None
         try:
-            language_suffix = lang_data["suffix"]
-
-            # Strategy: Search using both the original English query AND the strong localized suffix 
-            # This search is highly likely to find the Hindi/Gujarati video if it exists.
-            video_search_query = f"{query} | {language_suffix}" 
+            # Step 1: Generate the PERFECT localized YouTube search string using the AI
+            video_search_query = generate_youtube_query(query, category, language_keyword, model)
             
+            # Step 2: Execute search
             results = YoutubeSearch(video_search_query, max_results=1).to_dict()
         
         except Exception:
-            # Fallback to general English search if the localized search fails
+            # If the highly localized search fails, try a simple English fallback
             try:
                 results = YoutubeSearch(f"{query} educational video for kids", max_results=1).to_dict()
-                st.warning(f"YouTube search failed for {language_keyword} keywords.")
+                st.warning(f"Could not find a highly specific video in {language_keyword}. Showing a general education video.")
             except:
                 pass 
 
