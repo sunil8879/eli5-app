@@ -2,23 +2,28 @@ import streamlit as st
 import google.generativeai as genai
 from youtube_search import YoutubeSearch
 
-# --- 1. PAGE CONFIGURATION ---
+# --- 1. PAGE CONFIGURATION & STATE INITIALIZATION ---
 st.set_page_config(
     page_title="ELI5 Pro",
     page_icon="🧠",
     layout="wide"
 )
 
+# Initialize session state for query translation cache
+if 'translation_cache' not in st.session_state:
+    st.session_state['translation_cache'] = {}
+
+
 # --- LANGUAGE DEFINITIONS ---
 LANGUAGES = {
-    "English": "English",
-    "Hindi (हिंदी)": "Hindi",
-    "Gujarati (ગુજરાતી)": "Gujarati",
-    "Spanish (Español)": "Spanish",
-    "French (Français)": "French",
-    "Mandarin (普通话)": "Mandarin Chinese",
-    "German (Deutsch)": "German",
-    "Japanese (日本語)": "Japanese"
+    "English": {"name": "English", "code": "en", "suffix": "for children"},
+    "Hindi (हिंदी)": {"name": "Hindi", "code": "hi", "suffix": "बच्चों के लिए"},
+    "Gujarati (ગુજરાતી)": {"name": "Gujarati", "code": "gu", "suffix": "બાળકો માટે"},
+    "Spanish (Español)": {"name": "Spanish", "code": "es", "suffix": "para niños"},
+    "French (Français)": {"name": "French", "code": "fr", "suffix": "pour enfants"},
+    "Mandarin (普通话)": {"name": "Mandarin Chinese", "code": "zh", "suffix": "给孩子们"},
+    "German (Deutsch)": {"name": "German", "code": "de", "suffix": "für kinder"},
+    "Japanese (日本語)": {"name": "Japanese", "code": "ja", "suffix": "子供向け"}
 }
 
 # --- CATEGORY DEFINITIONS ---
@@ -103,13 +108,10 @@ st.markdown("""
     }
     
     /* 4. Search Bar: TURQUOISE */
-    
-    /* FIX 1: Increase the overall height allocated to the widget container */
     .stTextInput > div {
         min-height: 85px; 
     }
 
-    /* FIX 2: Style and size the actual input element */
     .stTextInput > div > div > input {
         background-color: #40E0D0 !important; /* Turquoise */
         color: #000000 !important;             /* Black Text */
@@ -167,6 +169,29 @@ except Exception as e:
     st.stop()
 
 
+# --- MULTILINGUAL TRANSLATION FUNCTION (CACHED) ---
+def translate_query_for_search(query, target_language_name, model):
+    if target_language_name == "English":
+        return query
+    
+    # Use session state cache key
+    cache_key = f"translation_{query}_{target_language_name}"
+    if cache_key in st.session_state:
+        return st.session_state[cache_key]
+        
+    # Prompt the AI ONLY for the translated topic name
+    prompt = f"Provide ONLY the single best translated topic name for '{query}' into {target_language_name}. Do not include any surrounding text, quotes, or explanations."
+    try:
+        response = model.generate_content(prompt)
+        translated_topic = response.text.strip().replace('"', '').replace("'", '').split('\n')[0].strip()
+        st.session_state[cache_key] = translated_topic
+        return translated_topic
+    except Exception:
+        # Fallback to the original English query if translation fails
+        st.session_state[cache_key] = query
+        return query
+
+
 # --- 4. THE TILTED LOGO ---
 st.markdown("""
     <div style="text-align: center; margin-bottom: 30px;">
@@ -192,7 +217,6 @@ st.markdown("""
 
 
 # --- 4.5. APP INTRODUCTION (Revised and Fixed Section) ---
-# Using concatenated string method for robust display
 html_intro = '<div style="background-color: #1877F2; padding: 20px; border-radius: 15px; border: 3px dashed #FF4500; margin-bottom: 40px;">'
 html_intro += '<h2 style="text-align: center; color: #FFFFFF; text-shadow: none; margin-top: 0;">Welcome to ELI5 - EXPLAIN LIKE I AM 5! 🧠</h2>'
 html_intro += '<h3 style="text-align: center; color: #FFFFFF; text-shadow: none; margin-bottom: 20px; margin-top: -10px;">(FOR KIDS LEARNING & DEVELOPMENT)</h3>'
@@ -202,6 +226,26 @@ html_intro += '<p style="text-align: center; color: #FFFFFF; font-size: 1.1rem; 
 html_intro += '</div>'
 
 st.markdown(html_intro, unsafe_allow_html=True)
+
+# --- 4.6. MONETIZATION / DONATION BUTTON ---
+BMC_LINK = "https://buymeacoffee.com/sunilvasarkar"  # <<< IMPORTANT: REPLACE THIS LINK
+
+st.sidebar.markdown("---")
+st.sidebar.markdown(
+    """
+    <div style="text-align: center; padding: 10px; border-radius: 10px; background-color: #FFEEAA; border: 2px dashed #D3A500;">
+        <h3 style="color: #000000; text-shadow: none; margin-bottom: 5px;">Enjoying ELI5 Pro?</h3>
+        <p style="font-size: 1rem; color: #000000; font-weight: 500;">
+            Help keep the AI brain running and buy the developer a coffee! ☕
+        </p>
+        <a href="https://buymeacoffee.com/sunilvasarkar" target="_blank">
+            <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 45px !important;width: 162px !important;" >
+        </a>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+st.sidebar.markdown("---")
 
 
 # --- 5. SEARCH INPUT & CATEGORY LOGIC (New Branching System with Language) ---
@@ -269,24 +313,25 @@ with col2:
 if query:
     st.write("---") 
     
-    # Use the display name to get the internal language keyword
-    language_keyword = LANGUAGES[selected_language]
+    # Get the language data
+    lang_data = LANGUAGES[selected_language]
+    language_keyword = lang_data["name"]
     
     with st.spinner(f'⚡ Brainstorming in {language_keyword}...'):
         
         # 1. GENERATE TEXT (With Safety Net)
+        # Use the original English query for text prompt clarity
         text_response = ""
         try:
-            # PROMPT MODIFIED: Includes the selected language for text generation
             prompt = (
-                f"Explain '{query}' as it relates to {category} to a 5-year-old. "
+                f"Explain '{query}' (Category: {category}) to a 5-year-old. "
                 f"Generate the entire explanation in **{language_keyword}**. "
                 f"Use a fun, engaging tone. Keep the explanation concise, around 500 words, using simple analogies."
             )
             response = model.generate_content(prompt)
             text_response = response.text
         except Exception as e:
-            # Fallback text simplified to remove technical error details for the user
+            # Fallback text simplified
             error_message = str(e)
             
             if 'Quota exceeded' in error_message:
@@ -308,15 +353,24 @@ if query:
         clean_query = query.replace(" ", "-")
         image_url = f"https://image.pollinations.ai/prompt/3d-render-of-{clean_query}-bright-colors-pixar-style-white-background-4k"
         
-        # 3. SEARCH VIDEO (Uses Youtube Search Library)
+        # 3. SEARCH VIDEO (Highly Localized using both English and Suffix)
         results = None
         try:
-            # VIDEO QUERY MODIFIED: Adds language hint for YouTube search
-            video_search_query = f"{query} for kids in {language_keyword}"
+            language_suffix = lang_data["suffix"]
+
+            # Strategy: Search using both the original English query AND the strong localized suffix 
+            # This search is highly likely to find the Hindi/Gujarati video if it exists.
+            video_search_query = f"{query} | {language_suffix}" 
             
             results = YoutubeSearch(video_search_query, max_results=1).to_dict()
+        
         except Exception:
-            pass 
+            # Fallback to general English search if the localized search fails
+            try:
+                results = YoutubeSearch(f"{query} educational video for kids", max_results=1).to_dict()
+                st.warning(f"YouTube search failed for {language_keyword} keywords.")
+            except:
+                pass 
 
         # --- DISPLAY RESULTS ---
         tab1, tab2 = st.tabs(["📖 THE STORY", "📺 VISUALS"])
@@ -339,4 +393,4 @@ if query:
                     video_id = results[0]['id']
                     st.video(f"https://www.youtube.com/watch?v={video_id}")
                 else:
-                    st.write("No suitable video found.")
+                    st.write(f"No suitable video found related to {language_keyword}. Try a simple search topic.")
