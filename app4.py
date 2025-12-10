@@ -182,16 +182,13 @@ st.markdown("""
 
 # --- 4.5. APP INTRODUCTION (Revised and Fixed Section) ---
 st.markdown("""
-    <div style="background-color: #1877F2; padding: 20px; border-radius: 15px; border: 3px dashed #FF4500; margin-bottom: 40px;">
-        
+    <div style="background-color: #1877F2; padding: 20px; border-radius: 15px; border: 3px dashed #FF4500; margin-bottom: 40px;">    
         <h2 style="text-align: center; color: #FFFFFF; text-shadow: none; margin-top: 0;">
             Welcome to ELI5 - EXPLAIN LIKE I AM 5! 🧠
-        </h2>
-        
+        </h2>        
         <h3 style="text-align: center; color: #FFFFFF; text-shadow: none; margin-bottom: 20px; margin-top: -10px;">
             (FOR KIDS LEARNING & DEVELOPMENT)
-        </h3>
-        
+        </h3>        
         <p style="text-align: center; color: #FFFFFF; font-size: 1.1rem; font-weight: 700;">
             Have you ever wondered how something works, but all the answers felt like they were written in a secret adult code? 🤯 We are here to help!
         </p>
@@ -203,7 +200,6 @@ st.markdown("""
         </p>
     </div>
     """, unsafe_allow_html=True)
-
 
 # --- 5. SEARCH INPUT & CATEGORY LOGIC (New Branching System) ---
 
