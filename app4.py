@@ -9,7 +9,19 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- 2. CUSTOM CSS ---
+# --- CATEGORY DEFINITIONS ---
+SUB_CATEGORIES = {
+    "Science": ["Gravity", "Photosynthesis", "Black Holes", "Microbes/Germs", "Evolution"],
+    "History": ["Roman Empire", "Ancient Egypt", "Medieval Castles", "World War II", "Local History (Custom)"],
+    "Technology": ["Artificial Intelligence (AI)", "Robotics", "How Computers Work", "Blockchain", "Bluetooth"],
+    "Geography": ["Volcanoes", "Deserts", "The North Pole", "Ocean Trenches", "Ecosystems"],
+    "Polity/Government": ["Democracy", "What is a Constitution", "Elections", "Taxes", "The UN"],
+    "Computers": ["How CPUs work", "The Internet", "Coding/Programming", "Operating Systems", "Cyber Security"],
+    "Animals": ["Whales", "Insects", "Dinosaurs", "Mammals", "Endangered Species"],
+    "Everyday Concepts": ["Money", "Time", "Electricity", "Magnets", "Mirrors"],
+    "Emotions": ["Happiness", "Sadness", "Fear", "Anger","sympathy", "Empathy"]
+}
+
 # --- 2. CUSTOM CSS (FIXED HEIGHT) ---
 st.markdown("""
     <style>
@@ -75,19 +87,21 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # --- 3. API SETUP ---
-# NOTE: Replace this placeholder key with your actual Gemini API Key
+# NOTE: Using st.secrets is crucial for security
 try:
     GOOGLE_API_KEY = st.secrets["google_api_key"]
 except KeyError:
     st.error("⚠️ API Key not found in Streamlit Secrets. Please set 'google_api_key'.")
-    st.stop() # Stop execution if key isn't found
+    st.stop() 
 
 try:
     genai.configure(api_key=GOOGLE_API_KEY)
-    # Using 'gemini-pro' for general explanation tasks
-    model = genai.GenerativeModel('gemini-flash-latest')
-except:
-    st.error("⚠️ API Key Missing or Invalid. Please check the setup.")
+    # Using 'gemini-2.5-flash' for stability and speed
+    model = genai.GenerativeModel('gemini-2.5-flash')
+except Exception as e:
+    st.error(f"⚠️ API Key configuration failed: {e}")
+    st.stop()
+
 
 # --- 4. THE TILTED LOGO ---
 st.markdown("""
@@ -113,10 +127,11 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 
-# --- 4.5. APP INTRODUCTION (New Section) ---
+# --- 4.5. APP INTRODUCTION ---
+# Changed H2 color back to White for better contrast on Blue box
 st.markdown("""
     <div style="background-color: #1877F2; padding: 20px; border-radius: 15px; border: 3px dashed #FF4500; margin-bottom: 40px;">
-        <h2 style="text-align: center; color: #FF4500; text-shadow: none; margin-top: 0;">
+        <h2 style="text-align: center; color: #FFFFFF; text-shadow: none; margin-top: 0;">
             Welcome to the Simplest Corner of the Internet! 🧠
         </h2>
         <p style="text-align: center; color: #FFFFFF; font-size: 1.1rem; font-weight: 700;">
@@ -132,10 +147,56 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 
-# --- 5. SEARCH INPUT ---
+# --- 5. SEARCH INPUT & CATEGORY LOGIC (New Branching System) ---
+
+# Initialize variables to avoid NameError if user doesn't interact
+query = None
+category = "General Knowledge"
+
 col1, col2, col3 = st.columns([1, 2, 1])
+
 with col2:
-    query = st.text_input("Search Topic:", placeholder="e.g. Gravity, Moon, Money...", label_visibility="collapsed")
+    # Initial choice: Search OR Choose
+    mode = st.radio(
+        "How do you want to find your topic?", 
+        ["Search Any Topic", "Choose Specific Category"], 
+        horizontal=True, 
+        index=0
+    )
+
+    st.write("---")
+    
+    if mode == "Search Any Topic":
+        # PATH 1: Direct Search Bar
+        query = st.text_input("Enter your topic:", placeholder="e.g. Gravity, Moon, Money...", label_visibility="collapsed")
+        category = "General Knowledge" # Use default category for the prompt
+        
+    elif mode == "Choose Specific Category":
+        # PATH 2: Guided Selection
+        
+        # Step 1: Main Category
+        main_category = st.selectbox(
+            "1. Select a Main Area:",
+            options=list(SUB_CATEGORIES.keys()),
+            key="main_cat_select"
+        )
+        
+        # Step 2: Sub-Category based on Main Category
+        if main_category in SUB_CATEGORIES:
+            sub_options = SUB_CATEGORIES[main_category]
+            sub_category = st.selectbox(
+                f"2. Choose a Sub-Topic under {main_category}:",
+                options=sub_options,
+                key="sub_cat_select"
+            )
+            
+            # Set the final query and category context for the AI
+            query = sub_category
+            category = main_category
+            
+            # Visual check for the user
+            st.info(f"You selected: **{query}** (in the {category} category)")
+
 
 # --- 6. LOGIC (CRASH PROOF) ---
 if query:
@@ -146,33 +207,40 @@ if query:
         # 1. GENERATE TEXT (With Safety Net)
         text_response = ""
         try:
-            prompt = f"Explain '{query}' to a 5-year-old. Use a fun, engaging tone. Keep the explanation concise, around 300 words, using simple analogies."
+            # Modified prompt to include the category for better context
+            # Increased word count is kept at 500 as per your last modification
+            prompt = f"Explain '{query}' as it relates to {category} to a 5-year-old. Use a fun, engaging tone. Keep the explanation concise, around 500 words, using simple analogies."
             response = model.generate_content(prompt)
             text_response = response.text
         except Exception as e:
-            # Fallback text if the API fails (e.g., Error 429)
-            text_response = f"""
-            ### 🚦 High Traffic Alert!
+            # Fallback text simplified to remove technical error details for the user
+            error_message = str(e)
             
-            **Google's AI brain is taking a quick nap** because we made too many requests too fast (Error 429: {e}).
+            if 'Quota exceeded' in error_message:
+                detail = "We've hit our usage limit for a few moments (Free Tier restriction)."
+            else:
+                detail = "The AI brain is temporarily busy or resting. Check your API key security if this persists."
+                
+            text_response = f"""
+            ### 🚦 High Traffic Alert: Limit Reached!
+            
+            **Reason:** {detail}
             
             Don't worry! Your **Images** and **Videos** below are still working perfectly. 👇
             
             *(Please wait 60 seconds and search again to get the text back!)*
             """
 
-        # 2. GENERATE IMAGE (Uses the Pollinations API, which is external and free)
+        # 2. GENERATE IMAGE (Pollinations API)
         clean_query = query.replace(" ", "-")
         image_url = f"https://image.pollinations.ai/prompt/3d-render-of-{clean_query}-bright-colors-pixar-style-white-background-4k"
         
-        # 3. SEARCH VIDEO (Uses Youtube Search Library)
+        # 3. SEARCH VIDEO (Youtube Search Library)
         results = None
         try:
-            # Search for videos suitable for kids
             results = YoutubeSearch(query + " for kids", max_results=1).to_dict()
-        except Exception as e:
-            # Error handling for the video search itself
-            st.error(f"Video search failed: {e}")
+        except Exception:
+            pass # Fail silently if Youtube search fails
 
         # --- DISPLAY RESULTS ---
         tab1, tab2 = st.tabs(["📖 THE STORY", "📺 VISUALS"])
@@ -193,7 +261,6 @@ if query:
                 st.markdown("### 🎥 Explanation Video")
                 if results and results[0].get('id'):
                     video_id = results[0]['id']
-                    # Use the standard YouTube embed format
                     st.video(f"https://www.youtube.com/watch?v={video_id}")
                 else:
                     st.write("No suitable video found.")
