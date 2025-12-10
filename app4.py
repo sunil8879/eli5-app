@@ -9,6 +9,18 @@ st.set_page_config(
     layout="wide"
 )
 
+# --- LANGUAGE DEFINITIONS ---
+LANGUAGES = {
+    "English": "English",
+    "Hindi (हिंदी)": "Hindi",
+    "Gujarati (ગુજરાતી)": "Gujarati",
+    "Spanish (Español)": "Spanish",
+    "French (Français)": "French",
+    "Mandarin (普通话)": "Mandarin Chinese",
+    "German (Deutsch)": "German",
+    "Japanese (日本語)": "Japanese"
+}
+
 # --- CATEGORY DEFINITIONS ---
 SUB_CATEGORIES = {
     "Science": [
@@ -149,7 +161,6 @@ except KeyError:
 
 try:
     genai.configure(api_key=GOOGLE_API_KEY)
-    # Using the stable and efficient 'gemini-2.5-flash'
     model = genai.GenerativeModel('gemini-2.5-flash')
 except Exception as e:
     st.error(f"⚠️ API Key configuration failed: {e}")
@@ -181,27 +192,19 @@ st.markdown("""
 
 
 # --- 4.5. APP INTRODUCTION (Revised and Fixed Section) ---
-st.markdown("""
-    <div style="background-color: #1877F2; padding: 20px; border-radius: 15px; border: 3px dashed #FF4500; margin-bottom: 40px;">    
-        <h2 style="text-align: center; color: #FFFFFF; text-shadow: none; margin-top: 0;">
-            Welcome to ELI5 - EXPLAIN LIKE I AM 5! 🧠
-        </h2>        
-        <h3 style="text-align: center; color: #FFFFFF; text-shadow: none; margin-bottom: 20px; margin-top: -10px;">
-            (FOR KIDS LEARNING & DEVELOPMENT)
-        </h3>        
-        <p style="text-align: center; color: #FFFFFF; font-size: 1.1rem; font-weight: 700;">
-            Have you ever wondered how something works, but all the answers felt like they were written in a secret adult code? 🤯 We are here to help!
-        </p>
-        <p style="text-align: center; color: #FFFFFF; font-size: 1.1rem; font-weight: 700;">
-            We use the power of AI to break down the biggest ideas—from **Black Holes** to **Bitcoin**—into stories so easy, even a 5-year-old can understand!
-        </p>
-        <p style="text-align: center; color: #FFFFFF; font-size: 1.1rem; font-weight: 700;">
-            Start by telling us if you want to **Search** or **Choose** your topic below. Let's learn! 👇
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
+# Using concatenated string method for robust display
+html_intro = '<div style="background-color: #1877F2; padding: 20px; border-radius: 15px; border: 3px dashed #FF4500; margin-bottom: 40px;">'
+html_intro += '<h2 style="text-align: center; color: #FFFFFF; text-shadow: none; margin-top: 0;">Welcome to ELI5 - EXPLAIN LIKE I AM 5! 🧠</h2>'
+html_intro += '<h3 style="text-align: center; color: #FFFFFF; text-shadow: none; margin-bottom: 20px; margin-top: -10px;">(FOR KIDS LEARNING & DEVELOPMENT)</h3>'
+html_intro += '<p style="text-align: center; color: #FFFFFF; font-size: 1.1rem; font-weight: 700;">Have you ever wondered how something works, but all the answers felt like they were written in a secret adult code? 🤯 We are here to help!</p>'
+html_intro += '<p style="text-align: center; color: #FFFFFF; font-size: 1.1rem; font-weight: 700;">We use the power of AI to break down the biggest ideas—from **Black Holes** to **Bitcoin**—into stories so easy, even a 5-year-old can understand!</p>'
+html_intro += '<p style="text-align: center; color: #FFFFFF; font-size: 1.1rem; font-weight: 700;">Start by telling us if you want to **Search** or **Choose** your topic below. Let\'s learn! 👇</p>'
+html_intro += '</div>'
 
-# --- 5. SEARCH INPUT & CATEGORY LOGIC (New Branching System) ---
+st.markdown(html_intro, unsafe_allow_html=True)
+
+
+# --- 5. SEARCH INPUT & CATEGORY LOGIC (New Branching System with Language) ---
 
 # Initialize variables to avoid NameError if user doesn't interact
 query = None
@@ -210,6 +213,16 @@ category = "General Knowledge"
 col1, col2, col3 = st.columns([1, 2, 1])
 
 with col2:
+    
+    # LANGUAGE SELECTOR
+    selected_language = st.selectbox(
+        "Select Language for Explanation:",
+        options=list(LANGUAGES.keys()),
+        index=0,
+        key="language_select"
+    )
+    st.write("---") 
+    
     # Initial choice: Search OR Choose
     mode = st.radio(
         "How do you want to find your topic?", 
@@ -256,13 +269,20 @@ with col2:
 if query:
     st.write("---") 
     
-    with st.spinner('⚡ Brainstorming...'):
+    # Use the display name to get the internal language keyword
+    language_keyword = LANGUAGES[selected_language]
+    
+    with st.spinner(f'⚡ Brainstorming in {language_keyword}...'):
         
         # 1. GENERATE TEXT (With Safety Net)
         text_response = ""
         try:
-            # Modified prompt to include the category for better context
-            prompt = f"Explain '{query}' as it relates to {category} to a 5-year-old. Use a fun, engaging tone. Keep the explanation concise, around 500 words, using simple analogies."
+            # PROMPT MODIFIED: Includes the selected language for text generation
+            prompt = (
+                f"Explain '{query}' as it relates to {category} to a 5-year-old. "
+                f"Generate the entire explanation in **{language_keyword}**. "
+                f"Use a fun, engaging tone. Keep the explanation concise, around 500 words, using simple analogies."
+            )
             response = model.generate_content(prompt)
             text_response = response.text
         except Exception as e:
@@ -288,10 +308,13 @@ if query:
         clean_query = query.replace(" ", "-")
         image_url = f"https://image.pollinations.ai/prompt/3d-render-of-{clean_query}-bright-colors-pixar-style-white-background-4k"
         
-        # 3. SEARCH VIDEO (Youtube Search Library)
+        # 3. SEARCH VIDEO (Uses Youtube Search Library)
         results = None
         try:
-            results = YoutubeSearch(query + " for kids", max_results=1).to_dict()
+            # VIDEO QUERY MODIFIED: Adds language hint for YouTube search
+            video_search_query = f"{query} for kids in {language_keyword}"
+            
+            results = YoutubeSearch(video_search_query, max_results=1).to_dict()
         except Exception:
             pass 
 
