@@ -599,11 +599,12 @@ if query:
     
     with st.spinner(f'⚡ Brainstorming in {language_keyword}...'):
         
-        # --- CRITICAL: AI Call to Generate Localized Video Search Query ---
+        # --- CRITICAL: Generate Localized Video Search Query (Used by Dynamic Search) ---
+        # This must run outside the try/except block for the text API call
         video_search_query = generate_youtube_query(query, category, language_keyword, client)
 
         # 1. GENERATE TEXT (With Safety Net using GROQ)
-        text_response = "" # <--- This line must be indented exactly here
+        text_response = ""
         try:
             prompt_content = (
                 f"Explain '{query}' (Category: {category}) to a 5-year-old. "
@@ -611,7 +612,7 @@ if query:
                 f"Use a fun, engaging tone. Keep the explanation concise, around 500 words, using simple analogies."
             )
             
-            # GROQ API Call
+            # GROQ API Call (Using the reliable 70B model format)
             response = client.chat.completions.create(
                 model="llama-3.3-70b-versatile", 
                 messages=[
@@ -700,5 +701,24 @@ if query:
                 
             with col_b:
                 st.markdown("### 🎥 Explanation Video")
+                
                 # Video is guaranteed to exist by this point 
                 st.video(f"https://www.youtube.com/watch?v={video_id}")
+                
+                # --- LANGUAGE TIP INSERTED HERE ---
+                st.markdown("""
+                    <div style="
+                        background-color: #1877F2; /* Facebook Blue */
+                        padding: 10px;
+                        border-radius: 8px;
+                        margin-top: 15px;
+                        text-align: center;
+                        box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+                    ">
+                        <p style="color: #FFFFFF !important; font-weight: 800; font-size: 1rem; margin: 0;">
+                            LANGUAGE TIP: Video audio may be in English for stability.
+                            <br>
+                            TO TRANSLATE SUBTITLES IN YOUR FAVOURITE LANGUAGE : CLICK  SETTINGS ⚙️ > SUBTITLES/CC > AUTO-TRANSLATE ON THE PLAYER ABOVE!
+                        </p>
+                    </div>
+                    """, unsafe_allow_html=True)
