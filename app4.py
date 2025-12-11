@@ -145,7 +145,221 @@ SUB_CATEGORIES = {
     "Health & Body": [
         "Bones and Muscles", "Eating Healthy Food", "Breathing", "Why We Get Sick", 
         "Doctors and Hospitals", "Brushing Teeth", "The Brain", "Exercise", "Allergies", "Blood"
-    ]
+    ],
+
+
+
+
+"Economics & Money": [
+    "What is a Bank", "How ATMs Work", "Saving & Budgeting",
+    "Demand & Supply (Kids)", "What Are Taxes Used For",
+    "Goods vs Services", "How Businesses Work"
+],
+
+"Psychology": [
+    "How the Brain Makes Decisions", "Habits & Routines", "Why We Dream",
+    "Growth Mindset", "Why We Forget Things", "Understanding Motivation"
+],
+
+"Health & Safety": [
+    "First Aid Basics", "Road Safety Rules", "Fire Safety",
+    "Internet Safety for Kids", "Hygiene Rules", "Emergency Numbers & Help"
+],
+
+"Creativity & Arts": [
+    "Drawing Techniques", "Cartooning", "Origami",
+    "Clay Modelling", "Colour Theory", "Creative Writing for Kids"
+],
+
+"Food & Nutrition": [
+    "What Are Vitamins", "Healthy Snacks", "How Digestion Works (Kids)",
+    "Where Food Comes From", "Food Groups", "Food Safety & Cleanliness"
+],
+
+"Transportation": [
+    "How Airplanes Fly", "How Trains Work", "Bicycles & Gears",
+    "Ships & Submarines", "Traffic Rules", "Future Transport (Hyperloop)"
+],
+
+"Careers & Future Jobs": [
+    "What Scientists Do", "Becoming a Doctor", "Space Careers",
+    "Digital Creators", "Engineers & Inventors", "Wildlife Researchers"
+],
+
+"Culture & Society": [
+    "World Traditions", "Family Structures", "Manners Around the World",
+    "Languages of the World", "Food Cultures", "Traditional Clothing"
+],
+
+"Logic & Critical Thinking": [
+    "Puzzles & Riddles", "Logical Reasoning", "Spot the Pattern",
+    "Sequencing", "Cause & Effect", "Analogies"
+],
+
+"Ethics & Values": [
+    "Fairness", "Responsibility", "Respecting Privacy",
+    "Environmental Responsibility", "Anti-Bullying", "Equality"
+],
+
+"Daily Life Skills": [
+    "Doing Basic Household Tasks", "Packing a School Bag", "Cleaning & Tidying",
+    "Shopping Basics", "How to Use Public Transport", "Understanding Labels"
+],
+
+"Weather & Natural Disasters": [
+    "Floods", "Droughts", "Hurricanes & Cyclones",
+    "Tsunamis", "Lightning", "Weather Forecasting"
+],
+
+"Mythology & Folk Stories": [
+    "Greek Mythology", "Indian Mythology", "Norse Mythology",
+    "Folk Tales Around the World", "Fairy Tales Explained", "Legends & Heroes"
+],
+
+"Family & Relationships": [
+    "Roles of Family Members", "Helping at Home", "Respecting Elders",
+    "Sibling Bonds", "Handling Conflicts", "Family Support"
+],
+
+"Media & Entertainment": [
+    "How Movies Are Made", "Animation Basics", "Music Genres",
+    "Comics & Superheroes", "Radio vs Television", "How News Works"
+],
+
+"Agriculture & Farming": [
+    "How Crops Grow", "Types of Farming", "Farm Animals",
+    "Organic Farming", "Irrigation", "Farm Machines"
+],
+
+"Architecture & Structures": [
+    "How Bridges Work", "Skyscrapers", "Tunnels",
+    "Houses Around the World", "Ancient Structures", "Building Materials"
+],
+
+"Oceans & Marine Life": [
+    "Coral Reefs", "Deep Sea Creatures", "Waves & Currents",
+    "Ocean Exploration", "Marine Plants", "Underwater Volcanoes"
+],
+
+"Hobbies & Recreation": [
+    "Gardening", "Bird Watching", "Stamp/ Coin Collecting",
+    "Camping", "Playing Instruments", "Photography Basics"
+],
+
+"Finance for Kids": [
+    "What Is Salary", "Pocket Money", "Profit & Loss (Simple)",
+    "Saving vs Spending", "Digital Payments", "What Is Insurance (Simple)"
+],
+
+
+
+
+
+
+"Economics & Money": [
+    "What is a Bank", "How ATMs Work", "Financial terminologies",
+    "Demand & Supply (Kids)", "What Are Taxes Used For",
+    "Goods vs Services", "History of Money", "Business ideas"
+],
+
+
+"Psychology": [
+    "How the Brain Makes Decisions", "Habits & Routines", "Why We Dream",
+    "Growth Mindset", "Why We Forget Things", "Understanding Motivation"
+],
+
+
+"Health & Safety": [
+    "First Aid Basics", "Road Safety Rules", "Fire Safety",
+    "Internet Safety for Kids", "Hygiene Rules",
+    "Emergency Numbers & Help"
+],
+
+
+"Creativity & Arts": [
+    "Drawing Techniques", "Landscaping", "Origami",
+    "Clay Modelling", "Colour Theory", "Creative Writing for Kids"
+],
+
+
+"Food & Nutrition": [
+    "Food groups", "Healthy food",
+    "How Digestion Works (Kids)", "Where Food Comes From",
+    "Healthy vs Unhealthy food", "Food Safety & Cleanliness"
+],
+
+
+"Transportation": [
+    "Inventions of aeroplanes", "How Trains Work",
+    "Bicycles & Gears", "Ships & Submarines",
+    "What is Hyperloop", "Future Transport"
+],
+
+
+"Careers & Future Jobs": [
+    "Jobs and Occupations", "Different types of Doctors",
+    "Space Careers", "Best jobs ever", "High paying jobs"
+],
+
+
+"Culture & Society": [
+    "World Traditions", "Family Structures",
+    "Manners Around the World", "Languages of the World",
+    "World cuisines", "Traditional Clothing"
+],
+
+
+"Logic & Critical Thinking": [
+    "Puzzles & Riddles", "Logical Reasoning", "Spot the Pattern",
+    "Sequencing", "Cause & Effect", "Foundational thinking",
+    "Matching, Sorting and games", "Analogy"
+],
+
+
+"Ethics & Values": [
+    "Honesty", "Responsibility", "Respecting Privacy",
+    "Environmental Responsibility", "Anti-Bullying", "Equality"
+],
+
+
+"Daily Life Skills": [
+    "Doing Basic Household Tasks", "Packing a School Bag",
+    "Cleaning & Tidying", "Shopping Basics",
+    "Talk about Public Transport", "Understanding Labels"
+],
+
+
+"Weather & Natural Disasters": [
+    "Floods", "Droughts", "Hurricanes & Cyclones",
+    "Tsunamis", "Lightning", "Cyclone",
+    "Natural disasters names"
+],
+
+
+"Mythology & Folk Stories": [
+    "Greek Mythology", "Indian Mythology", "Norse Mythology",
+    "Folk Tales Around the World", "Fairy Tales Explained",
+    "Myths | Legends | Folk tales | Fairy tales",
+    "Mahabharat", "Ramayan"
+],
+
+"Miscellaneous": [
+ "Advantages of drinking water",
+     "How do plants help us",
+     "Categories of animals",
+     "Animals and their sounds",
+     "Vertebrates & Invertebrates",
+     "Types of water bodies",
+     "Names of animals,birds & flowers",
+     "Musical instruments",
+     "Names and sounds of birds",
+     "Vehicle names",
+     "Carnivores,herbivores,omnivores",
+     "Human body",
+     "Toddler learning"
+]
+
+
 }
 
 
@@ -300,6 +514,135 @@ VIDEO_DB = {
     "Doctors and Hospitals": "BHfmsZnu7GQ", "Brushing Teeth": "l6XGE-Xuq3M", 
     "The Brain": "rVDZYQOoeHw", "Exercise": "lSuekPtI_Kc", 
     "Allergies": "sM3FDsMAMdc", "Blood": "Dw0WO2XZ5fM",
+
+
+
+
+
+
+
+
+
+
+
+# Economics & Money
+
+"What is a Bank": "fU4VBa-0ImU", "How ATMs Work": "iP_-3FrC1Sg", "Financial terminologies": "A9Xq3FGjpZA",
+"Demand & Supply (Kids)": "j2BGJdCN8Cw", "What Are Taxes Used For": "rAhobLacBrs",
+"Goods vs Services": "laKl9VRjaw0", "History of Money": "fcrQHC3jRsA", "Business ideas": "Je24erSNapw",
+
+
+
+# Psychology
+
+"How the Brain Makes Decisions": "ndDpjT0_IM0", "Habits & Routines": "MylSqdceXlU",
+"Why We Dream": "09TRoxgVPjs", "Growth Mindset": "w6LLxTcVN9k",
+"Why We Forget Things": "7GI4eTUyGSM", "Understanding Motivation": "XLPqy2oO-Eg",
+
+
+# Health & Safety
+
+"First Aid Basics": "2cMe3tBLaf4", "Road Safety Rules": "aT61nwd5U-s", "Fire Safety": "AWHGdWOI4kw",
+"Internet Safety for Kids": "s-Iy3_5lC5g", "Hygiene Rules": "l6XGE-Xuq3M",
+"Emergency Numbers & Help": "X3HTl-H69Dg",
+
+
+
+# Creativity & Arts
+
+"Drawing Techniques": "7SWvlUd2at8", "Landscaping": "eGGwB93IGwo", "Origami": "E10EtsY080c",
+"Clay Modelling": "NDzbyqOCSOg", "Colour Theory": "YeI6Wqn4I78",
+"Creative Writing for Kids": "KxVeE8Bik98",
+
+
+# Food & Nutrition
+
+"Food groups": "pmgkj01uUTw", "Healthy food": "EhfOZMOF9W4",
+"How Digestion Works (Kids)": "SD8kLAD1jnA", "Where Food Comes From": "v7HNTGXwQd0",
+"Healthy vs Unhealthy food": "kvlWTI672sk", "Food Safety & Cleanliness": "e7zOSDg6x8c",
+
+
+
+# Transportation
+
+"Inventions of aeroplanes": "NpqU3eSeS1c", "How Trains Work": "L9Rt_5T5cGU",
+"Bicycles & Gears": "oifV7-zYLhg", "Ships & Submarines": "LTUFm7P15cE",
+"What is Hyperloop": "S5fOWB6SNqs", "Future Transport ": "qb3SMLxz4JY",
+
+
+
+# Careers & Future Jobs
+
+"Jobs and Ocuupations": "ugsRzHMIF2o", "Different types of Doctors": "BHfmsZnu7GQ",
+"Space Careers": "IagxIpCvMl4", "Best jobs ever": "Nej8PkTgbhI",
+"High paying jobs": "P-Nn5B2U-CM", 
+
+
+
+# Culture & Society
+
+"World Traditions": "2Seg3t7PQQI", "Family Structures": "GnelN7Y70xs",
+"Manners Around the World": "WxjHzlQVtZs", "Languages of the World": "C_-8SUXLY6I",
+"World cuisines": "Lb0m0MF1924", "Traditional Clothing": "OyctNZgiMJk",
+
+
+
+# Logic & Critical Thinking
+
+"Puzzles & Riddles": "VHK-by9y8sA", "Logical Reasoning": "Aq5ms0s_GuQ",
+"Spot the Pattern": "CzFLDtvN_Xk", "Sequencing": "7aL78cZLUKc",
+"Cause & Effect": "T17uXLNMi6E", "Foundational thinking": "GBI6vCHeooM",
+"Matching,Sorting and games": "WBGcTq3aiY4", "Analogy": "71iIhK2eLLQ",
+
+
+# Ethics & Values
+
+"Honesty": "0VWK4plxkjk", "Responsibility": "UB4TKI7G8s0", "Respecting Privacy": "G7MIi-SogAc",
+"Environmental Responsibility": "KY4mlk5CKrk", "Anti-Bullying": "XkTqM-72w5k",
+"Equality": "Yt_2Hqel0Iw",
+
+
+
+# Daily Life Skills
+
+"Doing Basic Household Tasks": "p1WG8VdZuKo", "Packing a School Bag": "jFzxr9MrRXA",
+"Cleaning & Tidying": "-oWT9m7iNv0", "Shopping Basics": "QNGxlv5X-Oo",
+"Talk about Public Transport": "AF2gr6r89wc", "Understanding Labels": "R-o-83k8dP0",
+
+
+
+# Weather & Natural Disasters
+
+"Floods": "j4yuzWuMLGQ", "Droughts": "O5a6yHSI0L0", "Hurricanes & Cyclones": "J2__Bk4dVS0",
+"Tsunamis": "MfsugkikLJI", "Lightning": "ZR0O1wodxyE", "Cyclone": "oXNOyvs4xZU",
+"Natural disasters names": "E0_EkX5AlNg",
+
+
+
+# Mythology & Folk Stories
+
+"Greek Mythology": "wTxW7sa2rtg", "Indian Mythology": "Ygfwi1wjP9M",
+"Norse Mythology": "GDzmuV8D-88", "Folk Tales Around the World": "NncRwyOFA4E",
+"Fairy Tales Explained": "zDBvqNcbGI", "Myths|Legends|Folk tales|Failry tales": "kpLqEKLrxnc",
+"Mahabharat": "pHwgLLFyGMc", "Ramayan": "6Dp0iJNYKqk",
+
+#Miscellaneous
+ "Advantages of drinking water": "31F0laJjyy8",
+     "How do plants help us": "Z9mOrNcX4j0",
+     "Categories of animals": "5hFoZq0qgrM",
+     "Animals and their sounds": "GsoPwyStpJg",
+     "Vertebrates & Invertebrates": "LGxmZqQBOdU",
+     "Types of water bodies": "U-rUl_OFBq0",
+     "Names of animals,birds & flowers": "MssglYt2aLk",
+     "Musical instruments": "1hWb6Qu6A1w",
+     "Names and sounds of birds": "WhRpW0cVmds",
+     "Vehicle names": "_cn0pod5KRc",
+     "Carnivores,herbivores,omnivores": "VVjqDzTYfyw",
+     "Human body": "AHQGNb0zBgg",
+     "Toddler learning": "WOn8gdKrZzY",
+
+
+
     
     "DEFAULT_VIDEO_ID": "HAijfhtJs7w" 
 }
@@ -338,6 +681,35 @@ CATEGORY_DEFAULTS = {
      "Vegetables": "-wfHh2Wyq2U",
      "Festivals of India": "32Z3U30M5Ys",
      "Financial literacy": "Bqyek4dnycM",
+     "Economics & Money": "-dQ6ak7dHhk",
+     "Social skills": "Myf2CUx9E60",
+     "Healthy Habits": "jBEVDM0BEdI",
+     "Safety": "2-cRbXbkgYI",
+     "Creativity & Arts": "bsbpfdyQtGw",
+     "Food & Nutrition": "fagLa_46HkY",
+     "Transportation": "PcjIyMTuU0o",
+     "Careers & Future Jobs": "Iaxjhm21yhc",
+     "Communities": "04lO0ISBT40",
+     "Logic & Critical Thinking": "C-dvWa-IIG4",
+     "Ethics & Values": "eDTCua9fgMU",
+     "Daily routine": "MCQoWGAmj7w",
+     "Weather & Natural Disasters": "FCxCkXI4fc8",
+     "Mythology & Folk Stories": "2ccD-VkcDpA",
+     "Advantages of drinking water": "31F0laJjyy8",
+     "How do plants help us": "Z9mOrNcX4j0",
+     "Categories of animals": "5hFoZq0qgrM",
+     "Animals and their sounds": "GsoPwyStpJg",
+     "Vertebrates & Invertebrates": "LGxmZqQBOdU",
+     "Types of water bodies": "U-rUl_OFBq0",
+     "Names of animals,birds & flowers": "MssglYt2aLk",
+     "Musical instruments": "1hWb6Qu6A1w",
+     "Names and sounds of birds": "WhRpW0cVmds",
+     "Vehicle names": "_cn0pod5KRc",
+     "Carnivores,herbivores,omnivores": "VVjqDzTYfyw",
+     "Human body": "AHQGNb0zBgg",
+     "Toddler learning": "WOn8gdKrZzY",
+
+
     
     "DEFAULT_GENERIC": "HAijfhtJs7w"
 }
