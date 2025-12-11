@@ -9,6 +9,20 @@ st.set_page_config(
     layout="wide"
 )
 
+# --- LANGUAGE DEFINITIONS ---
+# --- LANGUAGE DEFINITIONS (CORRECT DICTIONARY STRUCTURE) ---
+LANGUAGES = {
+    "English": {"name": "English"},
+    "Hindi (हिंदी)": {"name": "Hindi"},
+    "Gujarati (ગુજરાતી)": {"name": "Gujarati"},
+    "Spanish (Español)": {"name": "Spanish"},
+    "French (Français)": {"name": "French"},
+    "Mandarin (普通话)": {"name": "Mandarin Chinese"},
+    "German (Deutsch)": {"name": "German"},
+    "Japanese (日本語)": {"name": "Japanese"}
+}
+
+
 # --- CATEGORY DEFINITIONS ---
 SUB_CATEGORIES = {
    "Science": [
@@ -417,6 +431,37 @@ except Exception as e:
     st.error(f"⚠️ GROQ API configuration failed: {e}")
     st.stop()
 
+# --- MULTILINGUAL QUERY GENERATION FUNCTION (CACHED) ---
+# NOTE: This function must be defined BEFORE it is called in Section 6.
+
+@st.cache_data(ttl=3600)
+def generate_youtube_query(topic, category, language_name, _client):
+    if language_name == "English":
+        return f"{topic} {category} educational video for kids safe mode child lock 10 minute"
+    
+    # Use a highly stable model for search term generation
+    search_model = "llama-3.3-70b-versatile" 
+    
+    prompt = (
+        f"You are a YouTube search expert. Generate the best possible, strictest search query "
+        f"to find a relevant, long educational video (10+ minutes) about the topic '{topic}' "
+        f"in the category '{category}'. "
+        f"The query must be strictly in **{language_name}** and targeted "
+        f"at children's education. Output ONLY the search query string, nothing else. "
+        f"Example for French: 'Les volcans geographie video éducative pour enfants 10 minutes'"
+    )
+    try:
+        response = _client.chat.completions.create(
+            model=search_model,
+            messages=[{"role": "user", "content": prompt}]
+        )
+        # Clean up output rigorously
+        search_query = response.choices[0].message.content.strip().replace('"', '').replace("'", '').split('\n')[0].strip()
+        return search_query
+    except Exception:
+        # Fallback to a complex English query if AI generation fails
+        return f"{topic} {category} educational video for kids safe mode child lock 10 minute"
+
 # --- 4. THE TILTED LOGO ---
 st.markdown("""
     <div style="text-align: center; margin-bottom: 30px;">
@@ -473,16 +518,25 @@ st.sidebar.markdown(
 st.sidebar.markdown("---")
 
 
-# --- 5. SEARCH INPUT & CATEGORY LOGIC (English-Only Flow) ---
+# --- 5. SEARCH INPUT & CATEGORY LOGIC (Multilingual Flow) ---
 
 # Initialize variables to avoid NameError if user doesn't interact
 query = None
 category = "General Knowledge"
-is_curated_search = False # Flag to track if the search is from the fixed list
+is_curated_search = False 
 
 col1, col2, col3 = st.columns([1, 2, 1])
 
 with col2:
+    
+    # NEW: LANGUAGE SELECTOR
+    selected_language = st.selectbox(
+        "Select Language for Explanation:",
+        options=list(LANGUAGES.keys()),
+        index=0,
+        key="language_select"
+    )
+    st.write("---") 
     
     # Initial choice: Search OR Choose
     mode = st.radio(
@@ -535,35 +589,41 @@ with col2:
             # Visual check for the user
             st.info(f"You selected: **{query}** (in the {category} category)")
 
-
 # --- 6. LOGIC (CRASH PROOF) ---
 if query:
     st.write("---") 
     
-    with st.spinner('⚡ Brainstorming in English...'):
+    # Get the language data
+    lang_data = LANGUAGES[selected_language]
+    language_keyword = lang_data["name"]
+    
+    with st.spinner(f'⚡ Brainstorming in {language_keyword}...'):
         
-      # 1. GENERATE TEXT (With Safety Net using GROQ)
-        text_response = ""
+        # --- CRITICAL: AI Call to Generate Localized Video Search Query ---
+        video_search_query = generate_youtube_query(query, category, language_keyword, client)
+
+        # 1. GENERATE TEXT (With Safety Net using GROQ)
+        text_response = "" # <--- This line must be indented exactly here
         try:
             prompt_content = (
                 f"Explain '{query}' (Category: {category}) to a 5-year-old. "
-                f"Generate the entire explanation in **English**. "
+                f"Generate the entire explanation in **{language_keyword}**. "
                 f"Use a fun, engaging tone. Keep the explanation concise, around 500 words, using simple analogies."
             )
             
             # GROQ API Call
             response = client.chat.completions.create(
-                model="llama-3.3-70b-versatile", # One of the fastest and most stable models on GROQ
+                model="llama-3.3-70b-versatile", 
                 messages=[
                     {"role": "system", "content": "You are an excellent teacher simplifying complex topics for children."},
-                    {"role": "user", "content": prompt_content}  # <--- THIS LINE IS NOW CORRECT
+                    {"role": "user", "content": prompt_content}
                 ],
-                max_tokens=1200 
+                max_tokens=1000 
             )
             text_response = response.choices[0].message.content
             
         except Exception as e:
-            # Fallback text simplified for stability (GROQ errors are usually rate limits too)
+            # Fallback text simplified
             error_message = str(e)
             
             if 'authentication' in error_message.lower() or 'invalid api key' in error_message.lower():
@@ -595,7 +655,7 @@ if query:
             video_id = VIDEO_DB.get(query, VIDEO_DB["DEFAULT_VIDEO_ID"])
             
             # Determine which default message to show
-            if video_id in VIDEO_DB.values(): # Checks if the ID is a known, filled ID
+            if video_id in VIDEO_DB.values(): 
                 st.info("Video selected from the highly-curated educational database (10+ minutes guaranteed).")
             else:
                 # If specific topic fails, use the general category fallback
@@ -604,17 +664,16 @@ if query:
                 st.warning(f"Curated video not found for '{query}'. Showing high-quality default video for {category}.")
 
         else:
-            # --- PATH B: DYNAMIC SEARCH (Search Bar Mode - Relevancy/Safety Focused) ---
+            # --- PATH B: DYNAMIC SEARCH (Search Bar Mode - Localized) ---
             
             # --- Attempt Dynamic Search ---
             try:
-                # Use stable English dynamic search for open topics with safety keywords
-                video_search_query = f"{query} {category} educational video for kids safe mode child lock 10 minute"
+                # We use the AI-generated video_search_query from the top of this block
                 results = YoutubeSearch(video_search_query, max_results=1).to_dict()
                 
                 if results and results[0].get('id'):
                     video_id = results[0]['id']
-                    st.warning("Using dynamic YouTube search. Video length and content relevance may vary.")
+                    st.warning(f"Using dynamic YouTube search localized for {language_keyword}. Video length and content relevance may vary.")
                 else:
                     # If dynamic search fails, use the category default fallback
                     video_id = CATEGORY_DEFAULTS.get(category, CATEGORY_DEFAULTS["DEFAULT_GENERIC"])
