@@ -402,16 +402,16 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # --- 3. API SETUP (USING GROQ) ---
-from groq import Groq # Corrected Import
+from groq import Groq 
 
 try:
-    # Read the GROQ key from Streamlit secrets
-    GROQ_API_KEY = st.secrets["groq_api_key"] 
+    # Use the name you set in your secrets store: 'eli5'
+    GROQ_API_KEY = st.secrets["eli5"] 
     
-    # Initialize the GROQ Client
-    client = Groq(api_key=GROQ_API_KEY) # Corrected Class Name
+    client = Groq(api_key=GROQ_API_KEY) 
 except KeyError:
-    st.error("⚠️ GROQ API Key not found in Streamlit Secrets. Please ensure the key 'groq_api_key' is set.")
+    # Update the error message to reflect the expected key name
+    st.error("⚠️ GROQ API Key not found in Streamlit Secrets. Please ensure the key 'eli5' is set correctly.")
     st.stop() 
 except Exception as e:
     st.error(f"⚠️ GROQ API configuration failed: {e}")
@@ -553,12 +553,12 @@ if query:
             
             # GROQ API Call
             response = client.chat.completions.create(
-                model="llama3-8b-8192", # One of the fastest and most stable models on GROQ
+                model="llama-3.3-70b-versatile", # One of the fastest and most stable models on GROQ
                 messages=[
                     {"role": "system", "content": "You are an excellent teacher simplifying complex topics for children."},
                     {"role": "user", "content": prompt_content}  # <--- THIS LINE IS NOW CORRECT
                 ],
-                max_tokens=1000 
+                max_tokens=1200 
             )
             text_response = response.choices[0].message.content
             
