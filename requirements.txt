@@ -1,3 +1,5 @@
 streamlit
 groq
 youtube-search
+gtts
+pydub
