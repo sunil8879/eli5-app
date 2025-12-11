@@ -1,6 +1,10 @@
+# --- IMPORTS ---
 from groq import Groq
 import streamlit as st
 from youtube_search import YoutubeSearch
+from gtts import gTTS # NEW IMPORT
+import os # NEW IMPORT
+import io # NEW IMPORT
 
 # --- 1. PAGE CONFIGURATION & STATE INITIALIZATION ---
 st.set_page_config(
@@ -8,6 +12,18 @@ st.set_page_config(
     page_icon="🧠",
     layout="wide"
 )
+
+# Initialize session state variables for TTS
+if 'tts_trigger' not in st.session_state:
+    st.session_state['tts_trigger'] = False
+if 'last_explanation' not in st.session_state:
+    st.session_state['last_explanation'] = ""
+if 'last_lang_code' not in st.session_state:
+    st.session_state['last_lang_code'] = "English"
+if 'current_audio_path' not in st.session_state:
+    st.session_state['current_audio_path'] = None 
+
+
 
 # --- LANGUAGE DEFINITIONS ---
 # --- LANGUAGE DEFINITIONS (CORRECT DICTIONARY STRUCTURE) ---
@@ -22,6 +38,35 @@ LANGUAGES = {
     "Japanese (日本語)": {"name": "Japanese"}
 }
 
+# --- TEXT-TO-SPEECH IMPORTS ---
+from gtts import gTTS
+import os
+import io
+
+# --- TTS FUNCTION (Cached for speed) ---
+# NOTE: Language code is needed for gTTS, which is slightly different than language name.
+# We will create a helper dictionary for the codes.
+TTS_LANG_CODES = {
+    "English": "en", "Hindi": "hi", "Gujarati": "gu", "Spanish": "es", 
+    "French": "fr", "Mandarin Chinese": "zh-cn", "German": "de", "Japanese": "ja"
+}
+
+@st.cache_resource(show_spinner=False)
+def generate_audio_bytes(text, language_name): # Renamed function
+    lang_code = TTS_LANG_CODES.get(language_name, 'en')
+    
+    try:
+        tts = gTTS(text=text, lang=lang_code, slow=False)
+        
+        # Use BytesIO to save audio directly into memory
+        fp = io.BytesIO()
+        tts.write_to_fp(fp)
+        fp.seek(0)
+        return fp.read() # Returns raw MP3 bytes
+        
+    except Exception as e:
+        print(f"TTS Generation Failed for {language_name}: {e}") 
+        return None
 
 # --- CATEGORY DEFINITIONS ---
 SUB_CATEGORIES = {
@@ -969,22 +1014,38 @@ if query:
     lang_data = LANGUAGES[selected_language]
     language_keyword = lang_data["name"]
     
+    # --- CHECK FOR ON-DEMAND AUDIO DISPLAY/GENERATION ---
+    audio_bytes_to_display = None
+    
+    # Flag to check if we should run the slow TTS generation now
+    if st.session_state.get('tts_trigger'):
+        st.session_state['tts_trigger'] = False # Reset trigger immediately
+        
+        # We run the slow TTS generation using the *last generated text*
+        if st.session_state.get('last_explanation'):
+            with st.spinner("Generating audio, please wait..."):
+                # Call the memory-based function
+                audio_bytes_to_display = generate_audio_bytes(
+                    st.session_state['last_explanation'], 
+                    st.session_state['last_lang_code']
+                )
+            
+    
     with st.spinner(f'⚡ Brainstorming in {language_keyword}...'):
         
-        # --- CRITICAL: Generate Localized Video Search Query (Used by Dynamic Search) ---
-        # This must run outside the try/except block for the text API call
+        # --- CRITICAL: Generate Localized Video Search Query (Uses AI) ---
         video_search_query = generate_youtube_query(query, category, language_keyword, client)
 
         # 1. GENERATE TEXT (With Safety Net using GROQ)
         text_response = ""
         try:
+            # ... (GROQ Text generation call, saves text_response, and sets session state) ...
             prompt_content = (
                 f"Explain '{query}' (Category: {category}) to a 5-year-old. "
                 f"Generate the entire explanation in **{language_keyword}**. "
                 f"Use a fun, engaging tone. Keep the explanation concise, around 500 words, using simple analogies."
             )
             
-            # GROQ API Call (Using the reliable 70B model format)
             response = client.chat.completions.create(
                 model="llama-3.3-70b-versatile", 
                 messages=[
@@ -995,8 +1056,11 @@ if query:
             )
             text_response = response.choices[0].message.content
             
+            st.session_state['last_explanation'] = text_response
+            st.session_state['last_lang_code'] = language_keyword
+            
         except Exception as e:
-            # Fallback text simplified
+            # ... (Error handling remains the same) ...
             error_message = str(e)
             
             if 'authentication' in error_message.lower() or 'invalid api key' in error_message.lower():
@@ -1024,46 +1088,52 @@ if query:
         video_id = None
         
         if is_curated_search:
-            # --- PATH A: CURATED SEARCH (Category Mode - Guaranteed 10+ Min) ---
             video_id = VIDEO_DB.get(query, VIDEO_DB["DEFAULT_VIDEO_ID"])
-            
-            # Determine which default message to show
             if video_id in VIDEO_DB.values(): 
                 st.info("Video selected from the highly-curated educational database (10+ minutes guaranteed).")
             else:
-                # If specific topic fails, use the general category fallback
                 category_fallback_id = CATEGORY_DEFAULTS.get(category, CATEGORY_DEFAULTS["DEFAULT_GENERIC"])
                 video_id = category_fallback_id
                 st.warning(f"Curated video not found for '{query}'. Showing high-quality default video for {category}.")
 
         else:
-            # --- PATH B: DYNAMIC SEARCH (Search Bar Mode - Localized) ---
-            
-            # --- Attempt Dynamic Search ---
             try:
-                # We use the AI-generated video_search_query from the top of this block
                 results = YoutubeSearch(video_search_query, max_results=1).to_dict()
-                
                 if results and results[0].get('id'):
                     video_id = results[0]['id']
                     st.warning(f"Using dynamic YouTube search localized for {language_keyword}. Video length and content relevance may vary.")
                 else:
-                    # If dynamic search fails, use the category default fallback
                     video_id = CATEGORY_DEFAULTS.get(category, CATEGORY_DEFAULTS["DEFAULT_GENERIC"])
                     st.warning(f"Dynamic search failed. Showing high-quality default video for {category}.")
             except Exception:
-                # If everything fails, use the absolute generic fallback
                 video_id = CATEGORY_DEFAULTS["DEFAULT_GENERIC"]
                 st.warning("All searches failed. Showing absolute general fallback video.")
-        
+
+
         # --- DISPLAY RESULTS ---
         tab1, tab2 = st.tabs(["📖 THE STORY", "📺 VISUALS"])
 
         # TAB 1: TEXT
         with tab1:
+            # AUDIO BUTTON TRIGGER
+            st.button(
+                f"🔊 Read Explanation Aloud ({language_keyword})", 
+                key='tts_button', 
+                on_click=lambda: st.session_state.update(tts_trigger=True)
+            )
+            st.markdown("---") # Separator after the button
+            
+            # Display generated audio if the bytes were successfully generated
+            if audio_bytes_to_display:
+                # This call streams the bytes directly and MUST show full controls
+                st.audio(audio_bytes_to_display, format='audio/mp3') 
+                st.markdown("---")
+            elif st.session_state.get('tts_trigger'):
+                 st.warning("Please wait a moment for the audio to be generated and try clicking the button again.")
+            
             st.markdown(text_response)
 
-        # TAB 2: VISUALS
+        # TAB 2: VISUALS (Remaining unchanged)
         with tab2:
             col_a, col_b = st.columns(2)
             
@@ -1073,19 +1143,12 @@ if query:
                 
             with col_b:
                 st.markdown("### 🎥 Explanation Video")
-                
-                # Video is guaranteed to exist by this point 
                 st.video(f"https://www.youtube.com/watch?v={video_id}")
                 
-                # --- LANGUAGE TIP INSERTED HERE ---
+                # LANGUAGE TIP
                 st.markdown("""
                     <div style="
-                        background-color: #1877F2; /* Facebook Blue */
-                        padding: 10px;
-                        border-radius: 8px;
-                        margin-top: 15px;
-                        text-align: center;
-                        box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+                        background-color: #1877F2; padding: 10px; border-radius: 8px; margin-top: 15px; text-align: center; box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
                     ">
                         <p style="color: #FFFFFF !important; font-weight: 800; font-size: 1rem; margin: 0;">
                             LANGUAGE TIP: Video audio may be in English for stability.
