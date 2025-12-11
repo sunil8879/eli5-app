@@ -1,5 +1,5 @@
+from groq import Groq
 import streamlit as st
-import google.generativeai as genai
 from youtube_search import YoutubeSearch
 
 # --- 1. PAGE CONFIGURATION & STATE INITIALIZATION ---
@@ -401,20 +401,21 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- 3. API SETUP ---
+# --- 3. API SETUP (USING GROQ) ---
+from groq import Groq # Corrected Import
+
 try:
-    GOOGLE_API_KEY = st.secrets["google_api_key"]
+    # Read the GROQ key from Streamlit secrets
+    GROQ_API_KEY = st.secrets["groq_api_key"] 
+    
+    # Initialize the GROQ Client
+    client = Groq(api_key=GROQ_API_KEY) # Corrected Class Name
 except KeyError:
-    st.error("⚠️ API Key not found in Streamlit Secrets. Please set 'google_api_key'.")
+    st.error("⚠️ GROQ API Key not found in Streamlit Secrets. Please ensure the key 'groq_api_key' is set.")
     st.stop() 
-
-try:
-    genai.configure(api_key=GOOGLE_API_KEY)
-    model = genai.GenerativeModel('gemini-2.5-flash')
 except Exception as e:
-    st.error(f"⚠️ API Key configuration failed: {e}")
+    st.error(f"⚠️ GROQ API configuration failed: {e}")
     st.stop()
-
 
 # --- 4. THE TILTED LOGO ---
 st.markdown("""
@@ -541,34 +542,45 @@ if query:
     
     with st.spinner('⚡ Brainstorming in English...'):
         
-        # 1. GENERATE TEXT (With Safety Net)
+      # 1. GENERATE TEXT (With Safety Net using GROQ)
         text_response = ""
         try:
-            # PROMPT: Simple English generation
-            prompt = (
+            prompt_content = (
                 f"Explain '{query}' (Category: {category}) to a 5-year-old. "
                 f"Generate the entire explanation in **English**. "
                 f"Use a fun, engaging tone. Keep the explanation concise, around 500 words, using simple analogies."
             )
-            response = model.generate_content(prompt)
-            text_response = response.text
+            
+            # GROQ API Call
+            response = client.chat.completions.create(
+                model="llama3-8b-8192", # One of the fastest and most stable models on GROQ
+                messages=[
+                    {"role": "system", "content": "You are an excellent teacher simplifying complex topics for children."},
+                    {"role": "user", "content": prompt_content}  # <--- THIS LINE IS NOW CORRECT
+                ],
+                max_tokens=1000 
+            )
+            text_response = response.choices[0].message.content
+            
         except Exception as e:
-            # Fallback text simplified
+            # Fallback text simplified for stability (GROQ errors are usually rate limits too)
             error_message = str(e)
             
-            if 'Quota exceeded' in error_message:
-                detail = "We've hit our usage limit for a few moments (Free Tier restriction). Try again in 30 minutes."
+            if 'authentication' in error_message.lower() or 'invalid api key' in error_message.lower():
+                detail = "API Key error. Check the GROQ key in Streamlit Secrets."
+            elif 'rate limit' in error_message.lower():
+                detail = "We've hit a temporary rate limit. Try again in 30 seconds."
             else:
-                detail = "The AI brain is temporarily busy or resting. Check your API key security if this persists."
+                detail = "The AI brain is temporarily busy or resting."
                 
             text_response = f"""
-            ### 🚦 High Traffic Alert: Limit Reached!
+            ### 🚦 AI Service Failure!
             
             **Reason:** {detail}
             
             Don't worry! Your **Images** and **Videos** below are still working perfectly. 👇
             
-            *(Please wait 60 seconds and search again to get the text back!)*
+            *(Please try searching again in a moment!)*
             """
 
         # 2. GENERATE IMAGE (Pollinations API)
