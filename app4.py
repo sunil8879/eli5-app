@@ -51,8 +51,9 @@ TTS_LANG_CODES = {
     "French": "fr", "Mandarin Chinese": "zh-cn", "German": "de", "Japanese": "ja"
 }
 
+# START OF NEW INSERTION:
 @st.cache_resource(show_spinner=False)
-def generate_audio_bytes(text, language_name): # Renamed function
+def generate_audio_bytes(text, language_name):
     lang_code = TTS_LANG_CODES.get(language_name, 'en')
     
     try:
@@ -67,6 +68,7 @@ def generate_audio_bytes(text, language_name): # Renamed function
     except Exception as e:
         print(f"TTS Generation Failed for {language_name}: {e}") 
         return None
+# END OF NEW INSERTION
 
 # --- CATEGORY DEFINITIONS ---
 SUB_CATEGORIES = {
@@ -879,6 +881,44 @@ def generate_youtube_query(topic, category, language_name, _client):
         # Fallback to a complex English query if AI generation fails
         return f"{topic} {category} educational video for kids safe mode child lock 10 minute"
 
+
+
+
+
+
+# --- QUIZ GENERATION FUNCTION (Cached and Fast - 5 QUESTIONS) ---
+@st.cache_data(ttl=600) # Cache quiz for 10 minutes
+def generate_quiz(_client, topic, category, lang):
+    # Use the 8B model for speed and low cost
+    quiz_model = "llama-3.3-70b-versatile" 
+    
+    prompt = (
+        f"Generate **5 separate multiple-choice quiz questions** based on the topic '{topic}' "
+        f"from the '{category}' area. The questions and options must be in **{lang}**."
+        f"Format your response strictly as a single JSON object with the following structure: "
+        f"{{'quizzes': [{{'question': '...', 'options': ['a', 'b', 'c', 'd'], 'correct_index': 0}}, ...]}}"
+    )
+    
+    try:
+        response = _client.chat.completions.create(
+            model=quiz_model,
+            messages=[
+                {"role": "system", "content": "You are a quiz master generating strict, clean JSON output containing a list of 5 quizzes."},
+                {"role": "user", "content": prompt}
+            ],
+            response_format={"type": "json_object"}
+        )
+        import json
+        return json.loads(response.choices[0].message.content)
+    except Exception as e:
+        print(f"Quiz Generation Error: {e}")
+        return None
+
+
+
+
+
+
 # --- 4. THE TILTED LOGO ---
 st.markdown("""
     <div style="text-align: center; margin-bottom: 30px;">
@@ -946,7 +986,16 @@ col1, col2, col3 = st.columns([1, 2, 1])
 
 with col2:
     
-    # NEW: LANGUAGE SELECTOR
+    # NEW: EXPLANATION MODE SELECTOR
+    explanation_mode = st.radio(
+        "Select Explanation Style:",
+        ["Informative Mode (Facts & Analogies)", "Story Mode (Narrative)"],
+        horizontal=True,
+        index=0,
+        key='explanation_mode'
+    )
+    
+    # LANGUAGE SELECTOR
     selected_language = st.selectbox(
         "Select Language for Explanation:",
         options=list(LANGUAGES.keys()),
@@ -1014,53 +1063,70 @@ if query:
     lang_data = LANGUAGES[selected_language]
     language_keyword = lang_data["name"]
     
-    # --- CHECK FOR ON-DEMAND AUDIO DISPLAY/GENERATION ---
+    # --- QUIZ STATE INITIALIZATION ---
+    quiz_key = f"quiz_{query}_{language_keyword}_{st.session_state.get('explanation_mode', 'Informative')}"
+    if quiz_key not in st.session_state:
+        st.session_state[quiz_key] = None
+    
+    # --- AUDIO STATE INITIALIZATION AND CHECK ---
+    # Initialize local variable to store audio data (bytes)
     audio_bytes_to_display = None
     
-    # Flag to check if we should run the slow TTS generation now
     if st.session_state.get('tts_trigger'):
         st.session_state['tts_trigger'] = False # Reset trigger immediately
         
-        # We run the slow TTS generation using the *last generated text*
         if st.session_state.get('last_explanation'):
             with st.spinner("Generating audio, please wait..."):
-                # Call the memory-based function
-                audio_bytes_to_display = generate_audio_bytes(
+                # Call the memory-based function (CORRECT NAME)
+                audio_bytes_to_display = generate_audio_bytes( 
                     st.session_state['last_explanation'], 
                     st.session_state['last_lang_code']
                 )
-            
+    
     
     with st.spinner(f'⚡ Brainstorming in {language_keyword}...'):
         
         # --- CRITICAL: Generate Localized Video Search Query (Uses AI) ---
         video_search_query = generate_youtube_query(query, category, language_keyword, client)
 
-        # 1. GENERATE TEXT (With Safety Net using GROQ)
+      # 1. GENERATE TEXT (With Safety Net using GROQ)
         text_response = ""
         try:
-            # ... (GROQ Text generation call, saves text_response, and sets session state) ...
+            # --- DYNAMIC PROMPT ADJUSTMENT ---
+            if st.session_state.get('explanation_mode') == "Story Mode (Narrative)":
+                mode_instruction = "Explain this concept as a simple, fun narrative story, using characters and a plot."
+            else:
+                mode_instruction = "Explain this concept using simple facts and analogies."
+
             prompt_content = (
-                f"Explain '{query}' (Category: {category}) to a 5-year-old. "
+                f"{mode_instruction} The topic is '{query}' (Category: {category}). "
                 f"Generate the entire explanation in **{language_keyword}**. "
-                f"Use a fun, engaging tone. Keep the explanation concise, around 500 words, using simple analogies."
+                f"Keep the explanation concise, around 500 words."
             )
             
+            # --- TOKEN LIMIT FIX ---
+            if language_keyword == "English":
+                token_limit = 1000 
+            else:
+                token_limit = 1800 
+
+            # GROQ API Call 
             response = client.chat.completions.create(
                 model="llama-3.3-70b-versatile", 
                 messages=[
                     {"role": "system", "content": "You are an excellent teacher simplifying complex topics for children."},
                     {"role": "user", "content": prompt_content}
                 ],
-                max_tokens=1000 
+                max_tokens=token_limit # <-- DYNAMIC LIMIT USED HERE
             )
             text_response = response.choices[0].message.content
             
+            # --- PERSIST TEXT AND LANGUAGE FOR FUTURE TTS/QUIZ CALL ---
             st.session_state['last_explanation'] = text_response
             st.session_state['last_lang_code'] = language_keyword
             
-        except Exception as e:
-            # ... (Error handling remains the same) ...
+        except Exception as e: # <--- THIS LINE MUST BE ALIGNED WITH 'try'
+            # Fallback text simplified
             error_message = str(e)
             
             if 'authentication' in error_message.lower() or 'invalid api key' in error_message.lower():
@@ -1079,16 +1145,23 @@ if query:
             
             *(Please try searching again in a moment!)*
             """
+        # 2. CACHE/GENERATE QUIZ (Runs once per session/topic)
+        if st.session_state[quiz_key] is None:
+            with st.spinner("Generating fun quiz (This may take a moment)..."):
+                st.session_state[quiz_key] = generate_quiz(client, query, category, language_keyword)
 
-        # 2. GENERATE IMAGE (Pollinations API)
+
+        # 3. GENERATE IMAGE (Pollinations API)
         clean_query = query.replace(" ", "-")
         image_url = f"https://image.pollinations.ai/prompt/3d-render-of-{clean_query}-bright-colors-pixar-style-white-background-4k"
         
-        # 3. VIDEO SEARCH: HYBRID (Curated or Dynamic)
+        # 4. VIDEO SEARCH: HYBRID (Curated or Dynamic)
         video_id = None
         
         if is_curated_search:
+            # --- PATH A: CURATED SEARCH (Category Mode - Guaranteed 10+ Min) ---
             video_id = VIDEO_DB.get(query, VIDEO_DB["DEFAULT_VIDEO_ID"])
+            
             if video_id in VIDEO_DB.values(): 
                 st.info("Video selected from the highly-curated educational database (10+ minutes guaranteed).")
             else:
@@ -1097,8 +1170,11 @@ if query:
                 st.warning(f"Curated video not found for '{query}'. Showing high-quality default video for {category}.")
 
         else:
+            # --- PATH B: DYNAMIC SEARCH (Search Bar Mode - Localized) ---
             try:
+                # We use the AI-generated video_search_query from the top of this block
                 results = YoutubeSearch(video_search_query, max_results=1).to_dict()
+                
                 if results and results[0].get('id'):
                     video_id = results[0]['id']
                     st.warning(f"Using dynamic YouTube search localized for {language_keyword}. Video length and content relevance may vary.")
@@ -1113,27 +1189,73 @@ if query:
         # --- DISPLAY RESULTS ---
         tab1, tab2 = st.tabs(["📖 THE STORY", "📺 VISUALS"])
 
-        # TAB 1: TEXT
+        # TAB 1: TEXT AND QUIZ
         with tab1:
-            # AUDIO BUTTON TRIGGER
+            st.markdown("## 📖 Explanation & Quiz")
+
+            # --- AUDIO PLAYER CONTROLS ---
             st.button(
                 f"🔊 Read Explanation Aloud ({language_keyword})", 
                 key='tts_button', 
                 on_click=lambda: st.session_state.update(tts_trigger=True)
             )
-            st.markdown("---") # Separator after the button
+            st.markdown("---")
             
             # Display generated audio if the bytes were successfully generated
             if audio_bytes_to_display:
-                # This call streams the bytes directly and MUST show full controls
+                # Play the raw bytes (shows full controls: progress bar, play/pause)
                 st.audio(audio_bytes_to_display, format='audio/mp3') 
                 st.markdown("---")
             elif st.session_state.get('tts_trigger'):
                  st.warning("Please wait a moment for the audio to be generated and try clicking the button again.")
             
             st.markdown(text_response)
+            
+            st.markdown("---")
+            
+            # ====== QUIZ DISPLAY SECTION (5 QUESTIONS) ======
+            quiz_container = st.session_state[quiz_key]
+            
+            if quiz_container and 'quizzes' in quiz_container and isinstance(quiz_container['quizzes'], list):
+                st.markdown("### 🤔 Test Your Knowledge! (5 Questions)")
+                
+                if 'quiz_results_history' not in st.session_state:
+                    st.session_state['quiz_results_history'] = {}
 
-        # TAB 2: VISUALS (Remaining unchanged)
+                # Iterate through all 5 quizzes
+                for i, quiz_data in enumerate(quiz_container['quizzes']):
+                    st.markdown(f"**Question {i+1}:** {quiz_data['question']}")
+                    
+                    result_key = f'result_q_{i}_{quiz_key}'
+
+                    with st.form(key=f'quiz_form_{i}'):
+                        selected_option = st.radio(
+                            "Select Answer:",
+                            options=quiz_data['options'],
+                            index=None,
+                            key=f'user_selection_{i}'
+                        )
+                        
+                        check_button = st.form_submit_button(f"Check Answer {i+1}")
+
+                    # Handle feedback after submission
+                    if check_button and selected_option is not None:
+                        user_index = quiz_data['options'].index(selected_option)
+                        correct_index = quiz_data['correct_index']
+                        
+                        if user_index == correct_index:
+                            st.session_state['quiz_results_history'][result_key] = True
+                        else:
+                            st.session_state['quiz_results_history'][result_key] = False
+                            
+                    # Display persistent feedback
+                    if result_key in st.session_state['quiz_results_history']:
+                        if st.session_state['quiz_results_history'][result_key]:
+                            st.success(f"🎉 Question {i+1}: Correct! Excellent.")
+                        else:
+                            st.error(f"❌ Question {i+1}: Incorrect. The correct answer was: {quiz_data['options'][correct_index]}")
+
+        # TAB 2: VISUALS
         with tab2:
             col_a, col_b = st.columns(2)
             
