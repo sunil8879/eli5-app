@@ -859,7 +859,7 @@ def generate_youtube_query(topic, category, language_name, _client):
         return f"{topic} {category} educational video for kids safe mode child lock 10 minute"
     
     # Use a highly stable model for search term generation
-    search_model = "llama-3.3-70b-versatile" 
+    search_model = "llama-3.1-8b-instant"
     
     prompt = (
         f"You are a YouTube search expert. Generate the best possible, strictest search query "
@@ -890,7 +890,7 @@ def generate_youtube_query(topic, category, language_name, _client):
 @st.cache_data(ttl=600) # Cache quiz for 10 minutes
 def generate_quiz(_client, topic, category, lang):
     # Use the 8B model for speed and low cost
-    quiz_model = "llama-3.3-70b-versatile" 
+    quiz_model = "llama-3.1-8b-instant"
     
     prompt = (
         f"Generate **5 separate multiple-choice quiz questions** based on the topic '{topic}' "
@@ -1112,7 +1112,7 @@ if query:
 
             # GROQ API Call 
             response = client.chat.completions.create(
-                model="llama-3.3-70b-versatile", 
+                model="llama-3.1-8b-instant", 
                 messages=[
                     {"role": "system", "content": "You are an excellent teacher simplifying complex topics for children."},
                     {"role": "user", "content": prompt_content}
