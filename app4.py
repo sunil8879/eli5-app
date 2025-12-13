@@ -191,7 +191,7 @@ SUB_CATEGORIES = {
     ],
     "Health & Body": [
         "Bones and Muscles", "Eating Healthy Food", "Breathing", "Why We Get Sick", 
-        "Doctors and Hospitals", "Brushing Teeth", "The Brain", "Exercise", "Allergies", "Blood"
+        "Doctors and Hospitals", "Brushing Teeth", "The Brain", "Exercise", "Allergies", "Blood", "How do body parts work"
     ],
 
 
@@ -390,6 +390,28 @@ SUB_CATEGORIES = {
     "Mahabharat", "Ramayan"
 ],
 
+"Stories": [
+    "Family stories", "Adventure stories", "Moral stories",
+    "Bedtime stories", "Fairy tales",
+    "Alice's wonderland",
+    "Aladdin and magic lamp", "Haatim tai",
+    "Arabian nights", "Panchtantra"
+],
+
+"Movies": [
+    "Little krishna", "Bal ganesh", "Tenali rama",
+    "Akbar birbal", "Vikram betal","Little singham","Motu patlu"
+],
+
+"Causes of Diseases": [
+    "Diabetes", "Malaria", "Chicken Pox",
+    "Allergies", "Typhoid","TB","Asthama",
+     "Diarrhoea", "Dandruff", "Heartattack",
+    "Kidney stones", "Appendix","Alzheimer","Hiccups",
+     "Head lice", "Dyslexia","Hand,foot & mouth disease","Depression","Pimples"
+],
+
+
 "Miscellaneous": [
  "Advantages of drinking water",
      "How do plants help us",
@@ -560,7 +582,38 @@ VIDEO_DB = {
     "Breathing": "67Jbbu7UZAA", "Why We Get Sick": "IKpg9JEJrHI", 
     "Doctors and Hospitals": "BHfmsZnu7GQ", "Brushing Teeth": "l6XGE-Xuq3M", 
     "The Brain": "rVDZYQOoeHw", "Exercise": "lSuekPtI_Kc", 
-    "Allergies": "sM3FDsMAMdc", "Blood": "Dw0WO2XZ5fM",
+    "Allergies": "sM3FDsMAMdc", "Blood": "Dw0WO2XZ5fM", "How do body parts work": "GYtJKrbqhiQ",
+     #Stories
+     "Family stories": "9G18UA311QA", "Adventure stories": "rHzHphVfnAo", 
+    "Moral stories": "eDTCua9fgMU", "Bedtime stories": "gQAyIXGHgnc", 
+    "Alice's wonderland": "IDujfwZqpgA", "Fairy tales": "_dR1grQ2hvU", 
+    "Aladdin and magic lamp": "viijvOzGRLI", "Haatim tai": "6O98ckc62Jk", 
+    "Arabian nights ": "sLEAfY3bAiI", "Panchtantra": "jutaxap6Ye0",
+     #Movies
+     "Little krishna": "3V-dmbxWcz4", "Bal ganesh": "hO1JNpwnkTs", 
+    "Tenali rama": "IhDiWLALlP4", "Akbar birbal": "9I5mtAgqKM8", 
+    "Vikram betal": "oQjurAE6PXI", "Little singham": "isg9KS28_qk", 
+     "Motu Patlu": "mYGB7ic99lU", 
+     #Causes of Diseases     
+    "Diabetes": "d86DofYpkrY",
+    "Malaria": "PGiqxnAr2fQ",
+    "Chicken pox": "xNc4kEt4pN0",
+    "Allergies": "sM3FDsMAMdc",
+    "Typhoid": "dae6VhLjT70",
+    "TB": "qlKwAH-8cmI",
+    "Asthma": "s1R0dL1VB0I",
+    "Diarrhoea": "tiz8zeGgp7U",
+    "Heart attack": "jP0qT6GpBVY",
+    "Kidney stones": "xmbpPWIV0VU",
+    "Dandruff": "Ut9WP9jL4s4",
+    "Appendix": "2IFjlIkHApo",
+    "Alzheimer": "5dmqaH-MlA0",
+    "Hiccups": "UZy2Wlh97SU",
+    "Head lice": "Ect-ty6ka0M",
+    "Dyslexia": "65psPXWzNic",
+    "Hand, foot and mouth disease": "stxuE51jI3s",
+    "Depression": "0hxFR6tezAc",
+    "Pimples": "SPQt5v5Xsg8",
 
 
 
@@ -975,18 +1028,18 @@ st.sidebar.markdown(
 st.sidebar.markdown("---")
 
 
-# --- 5. SEARCH INPUT & CATEGORY LOGIC (Multilingual Flow) ---
+# --- 5. SEARCH INPUT & CATEGORY LOGIC (Curated Flow Only) ---
 
 # Initialize variables to avoid NameError if user doesn't interact
 query = None
 category = "General Knowledge"
-is_curated_search = False 
+is_curated_search = True # ALWAYS TRUE now
 
 col1, col2, col3 = st.columns([1, 2, 1])
 
 with col2:
     
-    # NEW: EXPLANATION MODE SELECTOR
+    # EXPLANATION MODE SELECTOR (Kept for Story Mode feature)
     explanation_mode = st.radio(
         "Select Explanation Style:",
         ["Informative Mode (Facts & Analogies)", "Story Mode (Narrative)"],
@@ -1004,57 +1057,47 @@ with col2:
     )
     st.write("---") 
     
-    # Initial choice: Search OR Choose
+    # Initial choice: The UI will only show the curated option now.
     mode = st.radio(
         "How do you want to find your topic?", 
-        ["Search Any Topic", "Choose Specific Category"], 
+        [
+            # "Search Any Topic",  <-- REMOVED FROM UI
+            "Choose Specific Category"
+        ], 
         horizontal=True, 
-        index=0
+        index=0 # Index 0 now defaults to the remaining option
     )
 
     st.write("---")
     
-    if mode == "Search Any Topic":
-        # PATH 1: Direct Search Bar (Open Topics)
-        
-        # Step 1: Select the closest category for video fallback
-        category = st.selectbox(
-            "1. Select Closest Topic Area for Video Fallback:",
-            options=list(CATEGORY_DEFAULTS.keys()),
-            key="open_search_category"
+    # --- CURATED CONTENT PATH (The ONLY active path) ---
+    
+    # Step 1: Main Category
+    main_category = st.selectbox(
+        "1. Select a Main Area:",
+        options=list(SUB_CATEGORIES.keys()),
+        key="main_cat_select"
+    )
+    
+    # Step 2: Sub-Category based on Main Category
+    if main_category in SUB_CATEGORIES:
+        sub_options = SUB_CATEGORIES[main_category]
+        sub_category = st.selectbox(
+            f"2. Choose a Sub-Topic under {main_category}:",
+            options=sub_options,
+            key="sub_cat_select"
         )
         
-        # Step 2: Enter the search query
-        query = st.text_input("2. Enter your topic:", placeholder="e.g. Black Holes, Constitution, Money...", label_visibility="visible")
-        is_curated_search = False
+        # Set the final query and category context for the AI
+        query = sub_category
+        category = main_category
+        is_curated_search = True # Ensure this flag is set
         
-    elif mode == "Choose Specific Category":
-        # PATH 2: Guided Selection (Curated Content)
-        
-        # Step 1: Main Category
-        main_category = st.selectbox(
-            "1. Select a Main Area:",
-            options=list(SUB_CATEGORIES.keys()),
-            key="main_cat_select"
-        )
-        
-        # Step 2: Sub-Category based on Main Category
-        if main_category in SUB_CATEGORIES:
-            sub_options = SUB_CATEGORIES[main_category]
-            sub_category = st.selectbox(
-                f"2. Choose a Sub-Topic under {main_category}:",
-                options=sub_options,
-                key="sub_cat_select"
-            )
-            
-            # Set the final query and category context for the AI
-            query = sub_category
-            category = main_category
-            is_curated_search = True
-            
-            # Visual check for the user
-            st.info(f"You selected: **{query}** (in the {category} category)")
+        # Visual check for the user
+        st.info(f"You selected: **{query}** (in the {category} category)")
 
+# NOTE: The logic for "if mode == 'Search Any Topic':" is completely eliminated,
+# ensuring the script only executes the curated path.
 # --- 6. LOGIC (CRASH PROOF) ---
 if query:
     st.write("---") 
