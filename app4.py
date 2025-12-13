@@ -220,7 +220,9 @@ SUB_CATEGORIES = {
 
 "Food & Nutrition": [
     "What Are Vitamins", "Healthy Snacks", "How Digestion Works (Kids)",
-    "Where Food Comes From", "Food Groups", "Food Safety & Cleanliness"
+    "Where Food Comes From", "Food Groups", "Food Safety & Cleanliness",   "Food groups", "Healthy food",
+    "How Digestion Works (Kids)", "Where Food Comes From",
+    "Healthy vs Unhealthy food", "Food Safety & Cleanliness", "Details of Vitamins"
 ],
 
 "Transportation": [
@@ -329,11 +331,7 @@ SUB_CATEGORIES = {
 ],
 
 
-"Food & Nutrition": [
-    "Food groups", "Healthy food",
-    "How Digestion Works (Kids)", "Where Food Comes From",
-    "Healthy vs Unhealthy food", "Food Safety & Cleanliness"
-],
+
 
 
 "Transportation": [
@@ -409,6 +407,11 @@ SUB_CATEGORIES = {
      "Diarrhoea", "Dandruff", "Heartattack",
     "Kidney stones", "Appendix","Alzheimer","Hiccups",
      "Head lice", "Dyslexia","Hand,foot & mouth disease","Depression","Pimples"
+],
+
+"Harmful effects of food": [
+    "Sugar", "Junk food", "Milk",
+    "Fruit juice", "Coffee","Tea","Cold drinks","Processed food","Burger"
 ],
 
 
@@ -652,14 +655,27 @@ VIDEO_DB = {
 
 "Drawing Techniques": "7SWvlUd2at8", "Landscaping": "eGGwB93IGwo", "Origami": "E10EtsY080c",
 "Clay Modelling": "NDzbyqOCSOg", "Colour Theory": "YeI6Wqn4I78",
-"Creative Writing for Kids": "KxVeE8Bik98",
+"Creative Writing for Kids": "KxVeE8Bik98", 
 
 
 # Food & Nutrition
 
 "Food groups": "pmgkj01uUTw", "Healthy food": "EhfOZMOF9W4",
 "How Digestion Works (Kids)": "SD8kLAD1jnA", "Where Food Comes From": "v7HNTGXwQd0",
-"Healthy vs Unhealthy food": "kvlWTI672sk", "Food Safety & Cleanliness": "e7zOSDg6x8c",
+"Healthy vs Unhealthy food": "kvlWTI672sk", "Food Safety & Cleanliness": "e7zOSDg6x8c", "Details of Vitamins": "6gZzPE4Ln3s",
+
+#Harmful effects of food
+
+"Sugar": "vj1PB_NU__A",
+"Junk food": "9U0XFhE_t50",
+"Milk": "F5axBKDwM78",
+"Fruit juice": "FZzi6HcWJqE",
+"Coffee": "pGLuy5YuNhw",
+"Tea": "9jW0ZOS6uHA",
+"Cold drinks": "Cf16CSlxbdE",
+"Processed food": "Zn-b93v0X00",
+"Burger": "IQkLRMpN19w",
+
 
 
 
