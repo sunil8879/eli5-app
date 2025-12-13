@@ -414,6 +414,41 @@ SUB_CATEGORIES = {
     "Fruit juice", "Coffee","Tea","Cold drinks","Processed food","Burger"
 ],
 
+"Benefits of various fruits": [
+    "Apple", "Banana", "Orange", "Mango", "Grapes",
+    "Papaya", "Pineapple", "Watermelon", "Muskmelon", "Pear",
+
+    "Lemon", "Lime", "Mandarin", "Tangerine", "Clementine",
+    "Grapefruit", "Pomelo", "Sweet orange", "Bergamot",
+
+    "Strawberry", "Blueberry", "Raspberry", "Blackberry",
+    "Cranberry", "Gooseberry", "Mulberry", "Elderberry", "Boysenberry",
+
+    "Coconut", "Jackfruit", "Lychee", "Longan", "Rambutan",
+    "Durian", "Passion fruit", "Guava", "Star fruit", "Dragon fruit",
+    "Breadfruit", "Soursop", "Custard apple", "Sugar apple",
+    "Sapodilla", "Mangosteen",
+
+    "Peach", "Plum", "Cherry", "Apricot", "Nectarine",
+    "Olive", "Dates",
+
+    "Quince", "Medlar",
+
+    "Jamun", "Bael", "Wood apple", "Kokum", "Karonda",
+    "Phalsa", "Langsat", "Salak",
+
+    "Almond", "Cashew", "Walnut", "Pistachio", "Hazelnut",
+    "Brazilnut", "Macadamia", "Pecan", "Arecanut", "Raisins",
+
+    "Miracle fruit", "Jabuticaba",
+    "Feijoa", "Horned melon", "Lucuma", "Santol",
+    "Surinam cherry", "Ice apple",
+
+    "Kiwi", "Fig", "Pomegranate", "Avocado",
+    "Persimmon", "Tamarind", "Loquat"
+],
+
+
 
 "Miscellaneous": [
  "Advantages of drinking water",
@@ -675,6 +710,100 @@ VIDEO_DB = {
 "Cold drinks": "Cf16CSlxbdE",
 "Processed food": "Zn-b93v0X00",
 "Burger": "IQkLRMpN19w",
+
+
+#Benefits of various fruits
+
+"Apple": "-o_HaNo7LWw",
+"Banana": "NEzc5rmpF4k",
+"Orange": "2dPO6Rfx7-8",
+"Mango": "4-cR3N_NJT4",
+"Grapes": "5BmWiai1RzM",
+"Papaya": "VBNNCs2FmQ8",
+"Pineapple": "WU5X3iL3Pso",
+"Watermelon": "A_XHpn3UI8",
+"Muskmelon": "bCRer2fm-f8",
+"Pear": "VkdoQ5X5_Ig",
+"Lemon": "jOUXGQ3TZrU",
+"Lime": "kSFlGTYoHXo",
+"Tangerine": "q9-9fIFFdW4",
+"Clementine": "X-GWrrpBhLk",
+"Grapefruit": "kghdn2p0wIg",
+"Pomelo": "4frc8FpN8T0",
+"Bergamot": "t4sc-3TTUGo",
+
+"Strawberry": "u3oLQcx6FtE",
+"Blueberry": "vdJIHC0TvJQ",
+"Raspberry": "uaA9sbpdpok",
+"Blackberry": "8RVUBlWIVWw",
+"Cranberry": "QqGFk2jUwrQ",
+"Gooseberry": "O21VWukqDSc",
+"Mulberry": "fbg7yYRssqM",
+"Elderberry": "vfY5O2ztboU",
+
+"Coconut": "3zn5V0DeJ-I",
+"Jackfruit": "5QDC6h6PADk",
+"Lychee": "rDNb2Nze__E",
+"Longan": "_zMFihxA0xY",
+"Rambutan": "4uafgJRM2PU",
+"Durian": "8hq6tPkxYZo",
+"Passion fruit": "OY0x0re7hLY",
+"Guava": "YWj5aX2PENA",
+"Star fruit": "nEnlDc6c2gg",
+"Dragon fruit": "MNo4ddAfPxU",
+"Bread fruit": "cpQyi5ywpYs",
+"Soursop": "JLsNu7gCJu4",
+"Custard apple": "0QgdQYKGIpM",
+"Sugar apple": "0QgdQYKGIpM",
+"Chikoo": "gTPpIP7pYHg",
+"Mangosteen": "n8Gg2Ye7DXk",
+
+"Peach": "JUe7X0ZEXUM",
+"Plum": "ISkLcLLsjAs",
+"Cherry": "xVnsM-N1_Xs",
+"Apricot": "OAxdcmZBftI",
+"Nectarine": "-IgcL4EthAg",
+"Olive": "Y2yBruKH6FY",
+"Dates": "xsCqbQ-318A",
+"Quince": "nB_OiisPSuk",
+
+"Jamun (Java plum)": "T1E8SOvbq8Y",
+"Bael": "YBz804oo6Ls",
+"Wood apple": "EouaiIEVH4g",
+"Kokum": "DAVm-nTaTZY",
+"Phalsa": "yuuPlxfMbsM",
+"Snake fruit": "kmhUpFGYLlQ",
+"Langsat": "E6t3csIJ9o4",
+"Ice apple": "2sEcV1evXzM",
+
+"Kiwi": "mKVdtqbgxM4",
+"Fig": "r_Sk6Rq2y7g",
+"Pomegranate": "5l6tcQncnnk",
+"Tamarind": "ZSOor5w6K6A",
+"Avocado": "79DDXFpK4Ts",
+"Persimmon": "ZUDv7LN3ilw",
+"Loquat": "FHdTlmHdCi0",
+
+"Miracle fruit": "_S_yqe7BLyI",
+"Lucuma": "0hpZ1dCvh7Q",
+"Santol": "nOWkAYomDCU",
+"Surinam cherry": "KOGKfd8VPdc",
+"Horned melon": "c86AOSLIROI",
+"Jabuticaba": "4FgSRhmXH80",
+"Feijoa": "VJiZOA6XYxs",
+"Cantaloupe": "NCXHwNM46Iw",
+
+"Almond": "_Gd5lkiB0y0",
+"Cashew": "DD2ajId1Jj8",
+"Walnut": "TfA-xOKckSs",
+"Pistachio": "6AkhNgFSXBM",
+"Hazelnut": "NvfjLp02QVQ",
+"Brazilnut": "I8Un2dstqQk",
+"Macadamia": "LsPJeQLOkXk",
+"Pecan": "6zGpZCGROuA",
+"Arecanut": "OOiXltpCn_4",
+"Raisins": "Qu1Kkuis9ew",
+
 
 
 
