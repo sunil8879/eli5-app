@@ -414,6 +414,52 @@ SUB_CATEGORIES = {
     "Fruit juice", "Coffee","Tea","Cold drinks","Processed food","Burger"
 ],
 
+
+
+
+"Ancient Civilisation": [
+  "Mayans", "Vikings", "Indus Valley", "Harappan",
+  "Mohenjo Daro", "Ancient Greece", "Aztecs", "Inca",
+  "Mesopotamia", "Ming Dynasty", "Ancient Persia", "Stone Age"
+],
+
+"Coding Concepts": [
+  "What Is a Bug", "What Are Loops", "What Are Variables",
+  "What Are Binary Codes", "What Are IF-ELSE Statements",
+  "What Are Functions", "What Are Classes", "What Is OOPS",
+  "Types of Hackers", "Vocabulary", "How Do Search Engines Work"
+],
+
+"Music Theory": [
+  "Music Theory", "Rhythm vs Pulse", "Melody vs Harmony",
+  "Pitch (High & Low)", "Tempo (Speed)", "Chords",
+  "Orchestra Sections", "Treble and Bass Clef", "Scales"
+],
+
+"Ice Age Animals": [
+  "Woolly Mammoth", "Saber-Toothed Tiger vs Woolly Mammoth",
+  "Megalodon", "Dodo Bird", "Giant Sloth",
+  "Dire Wolf", "Woolly Rhinoceros", "Terror Birds",
+  "Irish Elk", "Glyptodon"
+],
+
+"Deep Space Objects": [
+  "Nebula", "Supernova", "Comets, Asteroids and Meteors",
+  "Dwarf Planet Pluto", "Black Dwarf Star", "Exoplanets",
+  "Space Exploration", "Space Debris", "The Kuiper Belt"
+],
+
+"Engineering Marvels": [
+  "Panama Canal", "Channel Tunnel", "Burj Khalifa",
+  "Golden Gate Bridge", "International Space Station",
+  "Hoover Dam", "Aqueducts", "Suspension Bridges",
+  "Bullet Trains", "Underwater Foundation", "Chenab Bridge"
+],
+
+
+
+
+
 "Benefits of various fruits": [
     "Apple", "Banana", "Orange", "Mango", "Grapes",
     "Papaya", "Pineapple", "Watermelon", "Muskmelon", "Pear",
@@ -654,6 +700,99 @@ VIDEO_DB = {
     "Pimples": "SPQt5v5Xsg8",
 
 
+
+
+
+
+# ANCIENT CIVILISATION
+
+"Mayans": "YW0rLAX3y-c",
+"Vikings": "ul75T-6MvWA",
+"Indus Valley": "S83f3hT1BiQ",
+"Harappan": "XWjoBcj25SY",
+"Mohenjo Daro": "VECJJIEYTXw",
+"Ancient Greece": "RchSJSJAbc0",
+"Aztecs": "urFpctOmJZY",
+"Inca": "k__GbOiOYz4",
+"Mesopotamia": "EHkAGKgoyGo",
+"Ming Dynasty": "0G5EKB0omVw",
+"Ancient Persia": "yN4F25Of3E4",
+"Stone Age": "yN4F25Of3E4",
+
+
+
+# CODING CONCEPTS
+
+"What Is a Bug": "EhTr8udTdV0",
+"What Are Loops": "r3Ti5Xp9W8A",
+"What Are Variables": "xjZDZ1TJe4o",
+"What Are Binary Codes": "XwBPeiK61Ec",
+"What Are IF-ELSE Statements": "wt_oQssEF0k",
+"What Are Functions": "3JIZ40yuZL0",
+"What Are Classes": "IHyxevOMosw",
+"What Is OOPS": "X3cFiJnxUBY",
+"Types of Hackers": "9K8Xn0y5CU4",
+"Vocabulary": "NNQWZf1FQyE",
+"How Do Search Engines Work": "9n4l491nuOI",
+
+
+
+# MUSIC THEORY
+
+"Music Theory": "VxF7ebeXjfU",
+"Rhythm vs Pulse": "HU_M4z7qnTc",
+"Melody vs Harmony": "jILmtgbFPxo",
+"Pitch (High & Low)": "jcAa9G64HdA",
+"Tempo (Speed)": "3e_ciHxPswk",
+"Chords": "u92UhIvxd1M",
+"Orchestra Sections": "Tde91GvEHV8",
+"Treble and Bass Clef": "OcRdtEGVENo",
+"Scales": "w5GgDAKAzos",
+
+
+
+# ICE AGE ANIMALS
+
+"Woolly Mammoth": "TlX4sGPd6SA",
+"Saber-Toothed Tiger vs Woolly Mammoth": "Wkbdy2RZI_w",
+"Megalodon": "P4Rdb3qgvPA",
+"Dodo Bird": "R-I-9SKLkoc",
+"Giant Sloth": "MaTQewJIznQ",
+"Dire Wolf": "eO7xZwclnlI",
+"Woolly Rhinoceros": "9QtQ1CK3XAQ",
+"Terror Birds": "fjVrfgoXNKA",
+"Irish Elk": "motD8jAbFVU",
+"Glyptodon": "nPP84w1ENa8",
+
+
+
+# DEEP SPACE OBJECTS
+
+"Nebula": "JmK2UNg34Z8",
+"Supernova": "JnFbG1cbLB0",
+"Comets, Asteroids and Meteors": "UHK-fbdbwF8",
+"Dwarf Planet Pluto": "G3Oguc-jpoI",
+"Black Dwarf Star": "7qnSTxxxa-I",
+"Exoplanets": "dsBI-bBdnDw",
+"Space Exploration": "F7JQk225fgA",
+"Space Debris": "425q4Iva4zM",
+"The Kuiper Belt": "2cQai-ec3J0",
+
+
+
+# ENGINEERING MARVELS
+
+"Panama Canal": "zRiTz3VDwvA",
+"Channel Tunnel": "ZVaoEPhI_Lw",
+"Burj Khalifa": "SqFx0cBR0oo",
+"Golden Gate Bridge": "C8ZwEbhrco0",
+"International Space Station": "oLrOnEmy_GA",
+"Hoover Dam": "hopBzK6BOwo",
+"Aqueducts": "Qc9FRYOuxBE",
+"Suspension Bridges": "Rg9a9-IvAyE",
+"Bullet Trains": "XjwF-STGtfE",
+"Underwater Foundation": "8u2snChJ1x8",
+"Chenab Bridge": "3hJreF5QVc0",
 
 
 
