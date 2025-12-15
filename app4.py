@@ -456,6 +456,51 @@ SUB_CATEGORIES = {
   "Bullet Trains", "Underwater Foundation", "Chenab Bridge"
 ],
 
+"Autobiographies": [
+  "Bhagat Singh",
+  "A. P. J. Abdul Kalam",
+  "J. Robert Oppenheimer",
+  "Abraham Lincoln",
+  "Adolf Hitler",
+  "Swami Vivekananda",
+  "Kalpana Chawla",
+  "Albert Einstein",
+  "Martin Luther King Jr.",
+  "Nikola Tesla",
+  "Nelson Mandela",
+  "Elon Musk",
+  "Bill Gates",
+  "Cristiano Ronaldo",
+  "Pelé"
+],
+
+"Inventions": [
+  "Paper",
+  "Steam Engine",
+  "Telephone",
+  "Television",
+  "Electric Bulb",
+  "Microwave Oven",
+  "Refrigerator",
+  "Washing Machine",
+  "Mobile Phone",
+  "Airplanes",
+  "Computer",
+  "Electricity",
+  "Email",
+  "Camera",
+  "Zero"
+],
+
+"The five senses": [
+  "Taste",
+  "Hearing",
+  "Smell",
+  "Touch",
+  "Sight",
+  "All Five Senses"
+],
+
 
 
 
@@ -793,6 +838,51 @@ VIDEO_DB = {
 "Bullet Trains": "XjwF-STGtfE",
 "Underwater Foundation": "8u2snChJ1x8",
 "Chenab Bridge": "3hJreF5QVc0",
+
+#AUTOBIOGRAPHIES
+"Bhagat Singh": "Hq4gX59w8ms",
+"A. P. J. Abdul Kalam": "sRd04r7mDjA",
+"J. Robert Oppenheimer": "4b4B6qrDPdI",
+"Abraham Lincoln": "za8ihVU-vx8",
+"Adolf Hitler": "wDVDC81eiv4",
+"Swami Vivekananda": "Dl9akckdaYk",
+"Kalpana Chawla": "ixgAX31s4RM",
+"Albert Einstein": "GjoYbsvUoO4",
+"Martin Luther King Jr.": "iGuKmYXgm6s",
+"Nikola Tesla": "58x6ID5-wqY",
+"Nelson Mandela": "F0lKZqHwNXE",
+"Elon Musk": "CxbMk4bREZk",
+"Bill Gates": "q2fQOo9_lIw",
+"Cristiano Ronaldo": "64VTm3QWshQ",
+"Pelé": "mS9zDEUsO3Q",
+
+#INVENTIONS
+"Paper": "COxB_GvdzWI",
+"Steam Engine": "hU22evActPU",
+"Telephone": "VNbFLCZ9KEY",
+"Television": "LV6r-RYVq7g",
+"Electric Bulb": "XWWgDn0C6DA",
+"Microwave Oven": "qCRm503O0po",
+"Refrigerator": "mBFa7H1ieAQ",
+"Washing Machine": "KSN6t4tc0ao",
+"Mobile Phone": "75aECeykhv0",
+"Airplanes": "NpqU3eSeS1c",
+"Computer": "zzMm2PaVUpQ",
+"Electricity": "qxWI2MGT6Co",
+"Email": "EZFmZPikKjQ",
+"Camera": "diNLTZNntuk",
+"Zero": "tALP1YGoF3I",
+
+#THE FIVE SENSES
+"Taste": "imkwAY2PtLw",
+"Hearing": "mptjEoHF2aI",
+"Smell": "v7Or809TTRU",
+"Touch": "mWeTqNdSQlE",
+"Sight": "xi2Xb56FpR4",
+"All Five Senses": "xHwNIw6nHPg",
+
+
+
 
 
 
