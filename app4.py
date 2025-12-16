@@ -502,6 +502,62 @@ SUB_CATEGORIES = {
 ],
 
 
+"Rocks & Minerals": [
+  "Rocks and Minerals",
+  "Types of Rocks",
+  "Rock Cycle",
+  "Rock Uses",
+  "Soil and Types"
+],
+
+"Dog Breeds": [
+  "100 Dog Breeds",
+  "Golden Retriever",
+  "German Shepherd",
+  "Doberman",
+  "Labrador",
+  "Bulldog",
+  "Pomeranian",
+  "Siberian Husky",
+  "Dalmatian",
+  "Beagle",
+  "Chihuahua"
+],
+
+"Secret Codes": [
+  "Morse Code",
+  "Invisible Ink",
+  "Fingerprints",
+  "Caesar Cipher"
+],
+
+"Basic Concepts": [
+  "MS Word",
+  "MS Excel",
+  "MS PowerPoint",
+  "Server",
+  "Google Drive",
+  "Google Docs",
+  "Google Sheets",
+  "Google Maps",
+  "Gmail"
+],
+
+"Natural Wonders of the World": [
+  "Northern Lights",
+  "Grand Canyon",
+  "Great Barrier Reef",
+  "Mount Everest",
+  "Victoria Falls",
+  "Dead Sea",
+  "Amazon Rainforest",
+  "Paricutin Volcano",
+  "Harbor of Rio",
+  "The Nile River"
+],
+
+
+
 
 "Benefits of various vegetables": [
   "Spinach", "Lettuce", "Cabbage", "Kale", "Swiss Chard",
@@ -587,7 +643,9 @@ SUB_CATEGORIES = {
      "Vehicle names",
      "Carnivores,herbivores,omnivores",
      "Human body",
-     "Toddler learning"
+     "Toddler learning",
+     "Finger abacus",
+     "Scientific instruments"
 ]
 
 
@@ -1249,8 +1307,51 @@ VIDEO_DB = {
 "Fairy Tales Explained": "zDBvqNcbGI", "Myths|Legends|Folk tales|Failry tales": "kpLqEKLrxnc",
 "Mahabharat": "pHwgLLFyGMc", "Ramayan": "6Dp0iJNYKqk",
 
+
+# Rocks & Minerals
+
+"Rocks and Minerals": "hxN0JatEZi4", "Types of Rocks": "qFEBPD3JEOM",
+"Rock Cycle": "uRaVu52eCBQ", "Rock Uses": "Vwcm-KFtLLM",
+"Soil and Types": "uFgfeS_VmBg",
+
+
+# Dog Breeds
+
+"100 Dog Breeds": "8MlqcBAyq1g", "Golden Retriever": "TXFLZ20mv3g",
+"German Shepherd": "rQ83mpQLBOY", "Doberman": "PaCWHpmvbCc",
+"Labrador": "fAYTqXbZR9U", "Bulldog": "dT_Ai3jt2kk",
+"Pomeranian": "d8_BEKwbwBk", "Siberian Husky": "tbn8IF0D9Yg",
+"Dalmatian": "BRrnz3F6Ucg", "Beagle": "eNGRyoVA4pg",
+"Chihuahua": "X4TVV5_cLGo",
+
+
+# Secret Codes
+
+"Morse Code": "0CYpik24pRU", "Invisible Ink": "AOVD7WgFP2s",
+"Fingerprints": "sMnTbG0-YUk", "Caesar Cipher": "QuXhWlekrNU",
+
+
+# Basic Concepts
+
+"MS Word": "KCfwX98EWIc", "MS Excel": "wbJcJCkBcMg",
+"MS PowerPoint": "KqgyvGxISxk", "Server": "UjCDWCeHCzY",
+"Google Drive": "luH4t1kZ5CA", "Google Docs": "OBITNezSmLY",
+"Google Sheets": "UvCANQhqsSw", "Google Maps": "CU4dBJk97AI",
+"Gmail": "CtRgwJaW2N4",
+
+
+# Natural Wonders of the World
+
+"Northern Lights": "4W0RcxZ6bGc", "Grand Canyon": "_RMZSgwjJeY",
+"Great Barrier Reef": "qmCtYtC_0fs", "Mount Everest": "g6eseuiBoz8",
+"Victoria Falls": "3T-z-715NPA", "Dead Sea": "MJl6wY1G8Ls",
+"Amazon Rainforest": "_OKdzTGRa4o", "Paricutin Volcano": "0XHDZYhVeQ4",
+"Harbor of Rio": "fdI-9rUZu6A", "The Nile River": "ERbQ3GsbFxM",
+
+
+
 #Miscellaneous
- "Advantages of drinking water": "31F0laJjyy8",
+     "Advantages of drinking water": "31F0laJjyy8",
      "How do plants help us": "Z9mOrNcX4j0",
      "Categories of animals": "5hFoZq0qgrM",
      "Animals and their sounds": "GsoPwyStpJg",
@@ -1263,6 +1364,8 @@ VIDEO_DB = {
      "Carnivores,herbivores,omnivores": "VVjqDzTYfyw",
      "Human body": "AHQGNb0zBgg",
      "Toddler learning": "WOn8gdKrZzY",
+     "Finger abacus": "5u55IhRGRAk",
+     "Scientific instruments": "GNP51BjotVc",
 
 
 
