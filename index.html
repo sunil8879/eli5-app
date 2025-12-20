@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ELI5 International</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #ffffff; font-family: sans-serif; }
+        iframe { width: 100%; height: 100%; border: none; display: block; }
+
+        /* --- THE FACEBOOK BLUE INSTALL BUTTON --- */
+        #installBtn {
+            display: none; 
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background-color:#28a745; 
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+            z-index: 9999;
+            align-items: center;
+            gap: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CLEANED IFRAME: Added 'allow-presentation' to fix the SecurityError -->
+    <iframe 
+        src="https://eli5-international.streamlit.app/?embed=true" 
+        allow="geolocation; microphone; camera;"
+        sandbox="allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-presentation">
+    </iframe>
+
+    <button id="installBtn">
+        <span>📲</span> INSTALL APP
+    </button>
+
+    <script>
+        let deferredPrompt;
+        const installBtn = document.getElementById('installBtn');
+
+        // Log PWA status for your verification
+        window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('✅ PWA ready to install');
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.style.display = 'flex';
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') installBtn.style.display = 'none';
+                deferredPrompt = null;
+            }
+        });
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').then(() => {
+                console.log("✅ Service Worker Active");
+            });
+        }
+    </script>
+</body>
+</html>
