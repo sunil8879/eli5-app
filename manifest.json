@@ -1,10 +1,11 @@
 {
   "name": "ELI5 International",
   "short_name": "ELI5",
-  "start_url": "/index.html",
+  "start_url": "/eli5-app/",
+  "scope": "/eli5-app/",
   "display": "standalone",
-  "background_color": "#0f172a",
-  "theme_color": "#2563eb",
+  "background_color": "#ffffff",
+  "theme_color": "#28a745",
   "icons": [
     {
       "src": "icon-192.png",
