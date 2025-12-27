@@ -1,0 +1,13 @@
+name: Wake Up Streamlit
+on:
+  schedule:
+    - cron: '*/30 * * * *' # Runs every 30 minutes
+  workflow_dispatch:      # Allows manual testing
+
+jobs:
+  wake:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Visit App
+        run: |
+          curl -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" https://eli5-international.streamlit.app/
