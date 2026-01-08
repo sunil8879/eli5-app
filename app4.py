@@ -2,9 +2,10 @@
 from groq import Groq
 import streamlit as st
 from youtube_search import YoutubeSearch
-from gtts import gTTS # NEW IMPORT
-import os # NEW IMPORT
-import io # NEW IMPORT
+from gtts import gTTS
+import os
+import io
+import json
 
 # --- 1. PAGE CONFIGURATION & STATE INITIALIZATION ---
 st.set_page_config(
@@ -13,64 +14,56 @@ st.set_page_config(
     layout="wide"
 )
 
-# Initialize session state variables for TTS
-if 'tts_trigger' not in st.session_state:
-    st.session_state['tts_trigger'] = False
+# Initialize points and learning history
+if 'stars' not in st.session_state:
+    st.session_state['stars'] = 0
+if 'learned_topics' not in st.session_state:
+    st.session_state['learned_topics'] = []
+if 'quiz_results_history' not in st.session_state:
+    st.session_state['quiz_results_history'] = {}
 if 'last_explanation' not in st.session_state:
     st.session_state['last_explanation'] = ""
-if 'last_lang_code' not in st.session_state:
-    st.session_state['last_lang_code'] = "English"
-if 'current_audio_path' not in st.session_state:
-    st.session_state['current_audio_path'] = None 
 
-
-
-# --- LANGUAGE DEFINITIONS ---
-# --- LANGUAGE DEFINITIONS (CORRECT DICTIONARY STRUCTURE) ---
-LANGUAGES = {
-    "English": {"name": "English"},
-    "Hindi (हिंदी)": {"name": "Hindi"},
-    "Gujarati (ગુજરાતી)": {"name": "Gujarati"},
-    "Spanish (Español)": {"name": "Spanish"},
-    "French (Français)": {"name": "French"},
-    "Mandarin (普通话)": {"name": "Mandarin Chinese"},
-    "German (Deutsch)": {"name": "German"},
-    "Japanese (日本語)": {"name": "Japanese"}
-}
-
-# --- TEXT-TO-SPEECH IMPORTS ---
-from gtts import gTTS
-import os
-import io
-
-# --- TTS FUNCTION (Cached for speed) ---
-# NOTE: Language code is needed for gTTS, which is slightly different than language name.
-# We will create a helper dictionary for the codes.
-TTS_LANG_CODES = {
-    "English": "en", "Hindi": "hi", "Gujarati": "gu", "Spanish": "es", 
-    "French": "fr", "Mandarin Chinese": "zh-cn", "German": "de", "Japanese": "ja"
-}
-
-# START OF NEW INSERTION:
-@st.cache_resource(show_spinner=False)
-def generate_audio_bytes(text, language_name):
-    lang_code = TTS_LANG_CODES.get(language_name, 'en')
+# --- 2. THE FLAMBOYANT SIDEBAR ---
+with st.sidebar:
+    st.markdown(f"""
+        <div style="background-color: #FFD700; padding: 20px; border-radius: 20px; text-align: center; border: 4px solid #000; box-shadow: 5px 5px 0px #0866FF;">
+            <h1 style="color: black; margin: 0; font-size: 60px;">⭐</h1>
+            <h2 style="color: black; margin: 0; font-family: 'Verdana';">{st.session_state['stars']} STARS</h2>
+            <p style="color: black; font-weight: 800; font-size: 14px;">ACHIEVEMENT SCORE</p>
+        </div>
+    """, unsafe_allow_html=True)
     
-    try:
-        tts = gTTS(text=text, lang=lang_code, slow=False)
-        
-        # Use BytesIO to save audio directly into memory
-        fp = io.BytesIO()
-        tts.write_to_fp(fp)
-        fp.seek(0)
-        return fp.read() # Returns raw MP3 bytes
-        
-    except Exception as e:
-        print(f"TTS Generation Failed for {language_name}: {e}") 
-        return None
-# END OF NEW INSERTION
+    st.write("---")
+    st.markdown("<h3 style='color: black;'>🛠️ Learning Tools</h3>", unsafe_allow_html=True)
+    show_bilingual = st.toggle("📖 Bilingual Mode (English + Native)")
 
-# --- CATEGORY DEFINITIONS ---
+    if st.session_state['learned_topics']:
+        st.markdown("<h4 style='color: black;'>📜 Lessons Completed:</h4>", unsafe_allow_html=True)
+        for t in reversed(st.session_state['learned_topics'][-5:]):
+            st.markdown(f"<p style='color: black; font-weight: bold;'>✅ {t}</p>", unsafe_allow_html=True)
+    
+    st.write("---")
+    BMC_LINK = "https://www.buymeacoffee.com/sunilvasarkar"
+    st.markdown(f"""<div style='text-align: center;'><a href='{BMC_LINK}' target='_blank'><img src='https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png' height='45'></a></div>""", unsafe_allow_html=True)
+
+# --- 3. DATA DEFINITIONS (FULL RESTORATION) ---
+LANGUAGES = {
+    "English": {"name": "English", "tld": "com"},
+    "Hindi (हिंदी)": {"name": "Hindi", "tld": "co.in"},
+    "Gujarati (ગુજરાતી)": {"name": "Gujarati", "tld": "co.in"},
+    "Spanish (Español)": {"name": "Spanish", "tld": "es"},
+    "French (Français)": {"name": "French", "tld": "fr"},
+    "Mandarin (普通话)": {"name": "Mandarin Chinese", "tld": "com"},
+    "German (Deutsch)": {"name": "German", "tld": "de"},
+    "Japanese (日本語)": {"name": "Japanese", "tld": "co.jp"}
+}
+
+TTS_LANG_CODES = {
+    "English": "en", "Hindi (हिंदी)": "hi", "Gujarati (ગુજરાતી)": "gu", "Spanish (Español)": "es", 
+    "French (Français)": "fr", "Mandarin (普通话)": "zh-cn", "German (Deutsch)": "de", "Japanese (日本語)": "ja"
+}
+
 SUB_CATEGORIES = {
    "Science": [
     "Gravity", "Photosynthesis", "Black Holes", "Microbes/Germs", "Evolution",
@@ -651,9 +644,6 @@ SUB_CATEGORIES = {
 
 }
 
-
-# --- CURATED VIDEO DATABASE (CLOSED SCRIPT CONTENT) ---
-# ACTION REQUIRED: Replace every 'ID_HERE...' placeholder with a valid 10+ minute YouTube ID.
 VIDEO_DB = {
     # Science
     "Gravity": "EwY6p-r_hyU", "Photosynthesis": "fG3bl2W-twI", 
@@ -1440,511 +1430,120 @@ CATEGORY_DEFAULTS = {
     "DEFAULT_GENERIC": "HAijfhtJs7w"
 }
 
+# --- 4. HELPER FUNCTIONS ---
+@st.cache_resource(show_spinner=False)
+def generate_audio_bytes(text, language_name):
+    lang_code = TTS_LANG_CODES.get(language_name, 'en')
+    tld = LANGUAGES.get(language_name, {}).get("tld", "com")
+    try:
+        # Optimized for Neutral clarity
+        tts = gTTS(text=text, lang=lang_code, tld=tld, slow=False)
+        fp = io.BytesIO()
+        tts.write_to_fp(fp)
+        fp.seek(0)
+        return fp.read()
+    except Exception:
+        return None
 
-# --- 2. CUSTOM CSS (VISUALS REMAIN THE SAME) ---
+@st.cache_data(ttl=600)
+def generate_quiz(_client, topic, category, lang):
+    prompt = (f"Generate 5 MCQs on '{topic}' in '{lang}'. Context: {category}. Use NATIVE script only. JSON format: {{'quizzes': [{{'question': '...', 'options': ['a', 'b', 'c', 'd'], 'correct_index': 0}}, ...]}}")
+    try:
+        response = _client.chat.completions.create(model="llama-3.1-8b-instant", messages=[{"role": "user", "content": prompt}], response_format={"type": "json_object"})
+        return json.loads(response.choices[0].message.content)
+    except: return None
+
+# --- 5. UI DESIGN (MODERN BLUE & YELLOW) ---
 st.markdown("""
     <style>
-    /* 1. Main Background: WHITE */
-    .stApp {
-        background-color: #FFFFFF;
-    }
-
-    /* 2. Text Color: Black & Readable */
-    p, li, .stMarkdown {
-        color: #000000 !important;
-        font-weight: 600;
-        font-size: 1.15rem;
-        line-height: 1.6;
-    }
-
-    /* 3. HEADERS: Clean 3D Bevel */
-    h1, h2, h3 {
-        color: #000000 !important;
-        font-family: 'Verdana', sans-serif;
-        font-weight: 900;
-        letter-spacing: 0.5px;
-        text-shadow: 2px 2px 0px #CCCCCC; 
-    }
-    
-    /* 4. Search Bar: TURQUOISE */
-    .stTextInput > div {
-        min-height: 85px; 
-    }
-
-    .stTextInput > div > div > input {
-        background-color: #40E0D0 !important; /* Turquoise */
-        color: #000000 !important;             /* Black Text */
-        font-weight: bold;
-        border: 2px solid #000000;
-        border-radius: 12px;
-        box-shadow: 4px 4px 0px rgba(0,0,0,0.2); 
-        height: 70px; /* Taller input box */
-        font-size: 24px; /* Larger font size to fill the space */
-        padding: 15px; /* Add vertical padding */
-    }
-    
-    /* 5. Selectbox Styles (AQUAMARINE) */
-    .stSelectbox > label,
-    .stSelectbox > div > button,
-    .stSelectbox > div[data-baseweb="select"] > div {
-        background-color: #7FFFD4 !important; /* Aquamarine */
-        border: 1px solid #000000;
-        border-radius: 8px;
-        font-weight: bold;
-        color: #000000 !important; /* Ensure black text */
-    }
-    
-    /* 6. Tabs styling */
-    .stTabs [data-baseweb="tab-list"] {
-        background-color: rgba(255,255,255, 0.5);
-        border-radius: 15px;
-        padding: 10px;
-        border: 2px solid black;
-    }
-    .stTabs [data-baseweb="tab"] {
-        color: #000000;
-        font-weight: 800;
-        font-size: 1.2rem;
-    }
-    
-    .block-container {
-        padding-top: 2rem;
-    }
+    .stApp { background-color: #FFFFFF; }
+    h1, h2, h3 { color: #0866FF !important; text-shadow: 2px 2px 0px #FFD700; font-family: 'Verdana'; }
+    p, li, div, label { color: #000000 !important; font-weight: 600; font-size: 1.1rem; }
+    .stTextInput > div > div > input { background-color: #FFD700 !important; color: #000 !important; font-weight: 900; border: 3px solid #000; }
+    .stSelectbox > div > div { background-color: #FFD700 !important; border: 2px solid #000 !important; }
+    .stTabs [data-baseweb="tab-list"] { background-color: #0866FF; border-radius: 15px; }
+    .stTabs [data-baseweb="tab"] { color: white !important; font-weight: 900; }
     </style>
     """, unsafe_allow_html=True)
 
-# --- 3. API SETUP (USING GROQ) ---
-from groq import Groq 
+st.markdown("<div style='text-align: center; margin-bottom: 20px;'><h1 style='font-size: 100px; margin: 0; line-height: 0.9;'>ELI<span style='color: #FFD700;'>5</span></h1><div style='background-color: #000; color: #FFD700; display: inline-block; padding: 10px 40px; font-size: 24px; font-weight: bold; border-radius: 50px; transform: rotate(-2deg); border: 3px solid #FFD700;'>PRO EDITION 🧠</div></div>", unsafe_allow_html=True)
 
-try:
-    # Use the name you set in your secrets store: 'eli5'
-    GROQ_API_KEY = st.secrets["eli5"] 
-    
-    client = Groq(api_key=GROQ_API_KEY) 
-except KeyError:
-    # Update the error message to reflect the expected key name
-    st.error("⚠️ GROQ API Key not found in Streamlit Secrets. Please ensure the key 'eli5' is set correctly.")
-    st.stop() 
-except Exception as e:
-    st.error(f"⚠️ GROQ API configuration failed: {e}")
-    st.stop()
-
-# --- MULTILINGUAL QUERY GENERATION FUNCTION (CACHED) ---
-# NOTE: This function must be defined BEFORE it is called in Section 6.
-
-@st.cache_data(ttl=3600)
-def generate_youtube_query(topic, category, language_name, _client):
-    if language_name == "English":
-        return f"{topic} {category} educational video for kids safe mode child lock 10 minute"
-    
-    # Use a highly stable model for search term generation
-    search_model = "llama-3.1-8b-instant"
-    
-    prompt = (
-        f"You are a YouTube search expert. Generate the best possible, strictest search query "
-        f"to find a relevant, long educational video (10+ minutes) about the topic '{topic}' "
-        f"in the category '{category}'. "
-        f"The query must be strictly in **{language_name}** and targeted "
-        f"at children's education. Output ONLY the search query string, nothing else. "
-        f"Example for French: 'Les volcans geographie video éducative pour enfants 10 minutes'"
-    )
-    try:
-        response = _client.chat.completions.create(
-            model=search_model,
-            messages=[{"role": "user", "content": prompt}]
-        )
-        # Clean up output rigorously
-        search_query = response.choices[0].message.content.strip().replace('"', '').replace("'", '').split('\n')[0].strip()
-        return search_query
-    except Exception:
-        # Fallback to a complex English query if AI generation fails
-        return f"{topic} {category} educational video for kids safe mode child lock 10 minute"
-
-
-
-
-
-
-# --- QUIZ GENERATION FUNCTION (Cached and Fast - 5 QUESTIONS) ---
-@st.cache_data(ttl=600) # Cache quiz for 10 minutes
-def generate_quiz(_client, topic, category, lang):
-    # Use the 8B model for speed and low cost
-    quiz_model = "llama-3.1-8b-instant"
-    
-    prompt = (
-        f"Generate **5 separate multiple-choice quiz questions** based on the topic '{topic}' "
-        f"from the '{category}' area. The questions and options must be in **{lang}**."
-        f"Format your response strictly as a single JSON object with the following structure: "
-        f"{{'quizzes': [{{'question': '...', 'options': ['a', 'b', 'c', 'd'], 'correct_index': 0}}, ...]}}"
-    )
-    
-    try:
-        response = _client.chat.completions.create(
-            model=quiz_model,
-            messages=[
-                {"role": "system", "content": "You are a quiz master generating strict, clean JSON output containing a list of 5 quizzes."},
-                {"role": "user", "content": prompt}
-            ],
-            response_format={"type": "json_object"}
-        )
-        import json
-        return json.loads(response.choices[0].message.content)
-    except Exception as e:
-        print(f"Quiz Generation Error: {e}")
-        return None
-
-
-
-
-
-
-# --- 4. THE TILTED LOGO ---
-st.markdown("""
-    <div style="text-align: center; margin-bottom: 30px;">
-        <h1 style="font-size: 90px; margin: 0; line-height: 0.9;">
-            ELI<span style="color: #FF4500;">5</span>
-        </h1>
-        <div style="
-            background-color: #000000; 
-            color: white; 
-            display: inline-block; 
-            padding: 10px 30px; 
-            font-size: 20px; 
-            font-weight: bold; 
-            border-radius: 50px; 
-            box-shadow: 4px 4px 0px #CCCCCC;
-            transform: rotate(-3deg);
-            margin-top: 10px;
-        ">
-            ENGLISH EDITION 🇬🇧
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-
-# --- 4.5. APP INTRODUCTION (Final Simplified Title) ---
-html_intro = '<div style="background-color: #1877F2; padding: 20px; border-radius: 15px; border: 3px dashed #FF4500; margin-bottom: 40px;">'
-html_intro += '<h2 style="text-align: center; color: #FFFFFF; text-shadow: none; margin-top: 0;">Welcome to ELI5 - EXPLAIN LIKE I AM 5! 🧠</h2>'
-html_intro += '<h3 style="text-align: center; color: #FFFFFF; text-shadow: none; margin-bottom: 20px; margin-top: -10px;">(FOR KIDS LEARNING & DEVELOPMENT)</h3>'
-html_intro += '<p style="text-align: center; color: #FFFFFF; font-size: 1.1rem; font-weight: 700;">Have you ever wondered how something works, but all the answers felt like they were written in a secret adult code? 🤯 We are here to help!</p>'
-html_intro += '<p style="text-align: center; color: #FFFFFF; font-size: 1.1rem; font-weight: 700;">We use the power of AI to break down the biggest ideas—from **Black Holes** to **Bitcoin**—into stories so easy, even a 5-year-old can understand!</p>'
-html_intro += '<p style="text-align: center; color: #FFFFFF; font-size: 1.1rem; font-weight: 700;">Start by telling us if you want to **Search** or **Choose** your topic below. Let\'s learn! 👇</p>'
-html_intro += '</div>'
-
-st.markdown(html_intro, unsafe_allow_html=True)
-
-# --- 4.6. MONETIZATION / DONATION BUTTON ---
-BMC_LINK = "https://www.buymeacoffee.com/sunilvasarkar"
-
-st.sidebar.markdown("---")
-st.sidebar.markdown(
-    f"""
-    <div style="text-align: center; padding: 10px; border-radius: 10px; background-color: #FFEEAA; border: 2px dashed #D3A500;">
-        <h3 style="color: #000000; text-shadow: none; margin-bottom: 5px;">Enjoying ELI5 Pro?</h3>
-        <p style="font-size: 1rem; color: #000000; font-weight: 500;">
-            Help keep the AI brain running and buy the developer a coffee! ☕
-        </p>
-        <a href="{BMC_LINK}" target="_blank">
-            <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 45px !important;width: 162px !important;" >
-        </a>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-st.sidebar.markdown("---")
-
-
-# --- 5. SEARCH INPUT & CATEGORY LOGIC (Curated Flow Only) ---
-
-# Initialize variables to avoid NameError if user doesn't interact
-query = None
-category = "General Knowledge"
-is_curated_search = True # ALWAYS TRUE now
-
+# Selection Logic
 col1, col2, col3 = st.columns([1, 2, 1])
-
 with col2:
-    
-    # EXPLANATION MODE SELECTOR (Kept for Story Mode feature)
-    explanation_mode = st.radio(
-        "Select Explanation Style:",
-        ["Informative Mode (Facts & Analogies)", "Story Mode (Narrative)"],
-        horizontal=True,
-        index=0,
-        key='explanation_mode'
-    )
-    
-    # LANGUAGE SELECTOR
-    selected_language = st.selectbox(
-        "Select Language for Explanation:",
-        options=list(LANGUAGES.keys()),
-        index=0,
-        key="language_select"
-    )
-    st.write("---") 
-    
-    # Initial choice: The UI will only show the curated option now.
-    mode = st.radio(
-        "How do you want to find your topic?", 
-        [
-            # "Search Any Topic",  <-- REMOVED FROM UI
-            "Choose Specific Category"
-        ], 
-        horizontal=True, 
-        index=0 # Index 0 now defaults to the remaining option
-    )
+    explanation_mode = st.radio("Explanation Style:", ["Informative Mode", "Story Mode"], horizontal=True)
+    selected_language = st.selectbox("Language:", options=list(LANGUAGES.keys()))
+    main_category = st.selectbox("Main Category Area:", options=list(SUB_CATEGORIES.keys()))
+    query = st.selectbox(f"Choose a Sub-Topic under {main_category}:", options=SUB_CATEGORIES[main_category])
 
-    st.write("---")
-    
-    # --- CURATED CONTENT PATH (The ONLY active path) ---
-    
-    # Step 1: Main Category
-    main_category = st.selectbox(
-        "1. Select a Main Area:",
-        options=list(SUB_CATEGORIES.keys()),
-        key="main_cat_select"
-    )
-    
-    # Step 2: Sub-Category based on Main Category
-    if main_category in SUB_CATEGORIES:
-        sub_options = SUB_CATEGORIES[main_category]
-        sub_category = st.selectbox(
-            f"2. Choose a Sub-Topic under {main_category}:",
-            options=sub_options,
-            key="sub_cat_select"
-        )
-        
-        # Set the final query and category context for the AI
-        query = sub_category
-        category = main_category
-        is_curated_search = True # Ensure this flag is set
-        
-        # Visual check for the user
-        st.info(f"You selected: **{query}** (in the {category} category)")
-
-# NOTE: The logic for "if mode == 'Search Any Topic':" is completely eliminated,
-# ensuring the script only executes the curated path.
-# --- 6. LOGIC (CRASH PROOF) ---
+# --- 6. API & LOGIC EXECUTION ---
 if query:
-    st.write("---") 
+    language_keyword = LANGUAGES[selected_language]["name"]
     
-    # Get the language data
-    lang_data = LANGUAGES[selected_language]
-    language_keyword = lang_data["name"]
-    
-    # --- QUIZ STATE INITIALIZATION ---
-    quiz_key = f"quiz_{query}_{language_keyword}_{st.session_state.get('explanation_mode', 'Informative')}"
-    if quiz_key not in st.session_state:
-        st.session_state[quiz_key] = None
-    
-    # --- AUDIO STATE INITIALIZATION AND CHECK ---
-    # Initialize local variable to store audio data (bytes)
-    audio_bytes_to_display = None
-    
-    if st.session_state.get('tts_trigger'):
-        st.session_state['tts_trigger'] = False # Reset trigger immediately
-        
-        if st.session_state.get('last_explanation'):
-            with st.spinner("Generating audio, please wait..."):
-                # Call the memory-based function (CORRECT NAME)
-                audio_bytes_to_display = generate_audio_bytes( 
-                    st.session_state['last_explanation'], 
-                    st.session_state['last_lang_code']
-                )
-    
-    
-    with st.spinner(f'⚡ Brainstorming in {language_keyword}...'):
-        
-        # --- CRITICAL: Generate Localized Video Search Query (Uses AI) ---
-        video_search_query = generate_youtube_query(query, category, language_keyword, client)
+    # Discovery Stars
+    if query not in st.session_state['learned_topics']:
+        st.session_state['learned_topics'].append(query)
+        st.session_state['stars'] += 5
 
-      # 1. GENERATE TEXT (With Safety Net using GROQ)
-        text_response = ""
+    with st.spinner(f'⚡ Processing in {selected_language}...'):
+        # STRICT PROMPT FOR NATIVE SCRIPT
+        prompt_content = (
+            f"Explain {query} (Category: {main_category}). Style: {explanation_mode}. "
+            f"If {query} is 'Apple' and category is Food, talk about fruit. "
+            f"Use ONLY the NATIVE script of {language_keyword} (Devanagari for Hindi, etc). NO ROMAN SCRIPT."
+        )
+        if show_bilingual and language_keyword != "English":
+            prompt_content += " IMPORTANT: Provide English explanation first, then '---', then the native script version."
+
         try:
-            # --- DYNAMIC PROMPT ADJUSTMENT ---
-            if st.session_state.get('explanation_mode') == "Story Mode (Narrative)":
-                mode_instruction = "Explain this concept as a simple, fun narrative story, using characters and a plot."
-            else:
-                mode_instruction = "Explain this concept using simple facts and analogies."
-
-            prompt_content = (
-                f"{mode_instruction} The topic is '{query}' (Category: {category}). "
-                f"Generate the entire explanation in **{language_keyword}**. "
-                f"Keep the explanation concise, around 500 words."
-            )
+            GROQ_API_KEY = st.secrets["eli5"]
+            client = Groq(api_key=GROQ_API_KEY)
             
-            # --- TOKEN LIMIT FIX ---
-            if language_keyword == "English":
-                token_limit = 1000 
-            else:
-                token_limit = 1800 
-
-            # GROQ API Call 
             response = client.chat.completions.create(
-                model="llama-3.1-8b-instant", 
-                messages=[
-                    {"role": "system", "content": "You are an excellent teacher simplifying complex topics for children."},
-                    {"role": "user", "content": prompt_content}
-                ],
-                max_tokens=token_limit # <-- DYNAMIC LIMIT USED HERE
+                model="llama-3.1-8b-instant",
+                messages=[{"role": "system", "content": "You are a clear, high-quality teacher for children."}, {"role": "user", "content": prompt_content}],
+                max_tokens=2500
             )
             text_response = response.choices[0].message.content
-            
-            # --- PERSIST TEXT AND LANGUAGE FOR FUTURE TTS/QUIZ CALL ---
             st.session_state['last_explanation'] = text_response
-            st.session_state['last_lang_code'] = language_keyword
             
-        except Exception as e: # <--- THIS LINE MUST BE ALIGNED WITH 'try'
-            # Fallback text simplified
-            error_message = str(e)
-            
-            if 'authentication' in error_message.lower() or 'invalid api key' in error_message.lower():
-                detail = "API Key error. Check the GROQ key in Streamlit Secrets."
-            elif 'rate limit' in error_message.lower():
-                detail = "We've hit a temporary rate limit. Try again in 30 seconds."
-            else:
-                detail = "The AI brain is temporarily busy or resting."
-                
-            text_response = f"""
-            ### 🚦 AI Service Failure!
-            
-            **Reason:** {detail}
-            
-            Don't worry! Your **Images** and **Videos** below are still working perfectly. 👇
-            
-            *(Please try searching again in a moment!)*
-            """
-        # 2. CACHE/GENERATE QUIZ (Runs once per session/topic)
-        if st.session_state[quiz_key] is None:
-            with st.spinner("Generating fun quiz (This may take a moment)..."):
-                st.session_state[quiz_key] = generate_quiz(client, query, category, language_keyword)
-
-
-        # 3. GENERATE IMAGE (Pollinations API)
-        clean_query = query.replace(" ", "-")
-        image_url = f"https://image.pollinations.ai/prompt/3d-render-of-{clean_query}-bright-colors-pixar-style-white-background-4k"
-        
-        # 4. VIDEO SEARCH: HYBRID (Curated or Dynamic)
-        video_id = None
-        
-        if is_curated_search:
-            # --- PATH A: CURATED SEARCH (Category Mode - Guaranteed 10+ Min) ---
+            # Visuals & Multimedia
+            clean_q = f"{query} {main_category} edible nature".replace(" ", "-")
+            image_url = f"https://image.pollinations.ai/prompt/3d-pixar-render-of-{clean_q}-white-background-no-gadgets?nologo=true"
             video_id = VIDEO_DB.get(query, VIDEO_DB["DEFAULT_VIDEO_ID"])
-            
-            if video_id in VIDEO_DB.values(): 
-                st.info("Video selected from the highly-curated educational database (10+ minutes guaranteed).")
-            else:
-                category_fallback_id = CATEGORY_DEFAULTS.get(category, CATEGORY_DEFAULTS["DEFAULT_GENERIC"])
-                video_id = category_fallback_id
-                st.warning(f"Curated video not found for '{query}'. Showing high-quality default video for {category}.")
+            quiz_data = generate_quiz(client, query, main_category, language_keyword)
 
-        else:
-            # --- PATH B: DYNAMIC SEARCH (Search Bar Mode - Localized) ---
-            try:
-                # We use the AI-generated video_search_query from the top of this block
-                results = YoutubeSearch(video_search_query, max_results=1).to_dict()
+            t1, t2 = st.tabs(["📖 STORY & LESSON", "📺 VISUAL LEARNING"])
+            with t1:
+                c1, c2 = st.columns([3, 1])
+                with c1:
+                    if st.button("🔊 PLAY STORY"):
+                        audio = generate_audio_bytes(text_response, selected_language)
+                        if audio: st.audio(audio, format='audio/mp3')
+                with c2:
+                    if st.button("🛑 STOP"): st.rerun()
+
+                st.markdown(text_response)
                 
-                if results and results[0].get('id'):
-                    video_id = results[0]['id']
-                    st.warning(f"Using dynamic YouTube search localized for {language_keyword}. Video length and content relevance may vary.")
-                else:
-                    video_id = CATEGORY_DEFAULTS.get(category, CATEGORY_DEFAULTS["DEFAULT_GENERIC"])
-                    st.warning(f"Dynamic search failed. Showing high-quality default video for {category}.")
-            except Exception:
-                video_id = CATEGORY_DEFAULTS["DEFAULT_GENERIC"]
-                st.warning("All searches failed. Showing absolute general fallback video.")
+                # QUIZ SECTION
+                if quiz_data:
+                    st.write("---")
+                    st.markdown("### 🤔 Fun Mini-Quiz")
+                    for i, q in enumerate(quiz_data['quizzes']):
+                        st.write(f"**{i+1}. {q['question']}**")
+                        ans = st.radio("Choose:", q['options'], key=f"q_{query}_{i}")
+                        if st.button(f"Check Answer {i+1}", key=f"btn_{query}_{i}"):
+                            if q['options'].index(ans) == q['correct_index']:
+                                if f"q_{query}_{i}" not in st.session_state['quiz_results_history']:
+                                    st.session_state['stars'] += 10
+                                    st.session_state['quiz_results_history'][f"q_{query}_{i}"] = True
+                                st.success("Correct! +10 Stars ⭐")
+                            else: st.error("Try again!")
 
+            with t2:
+                v1, v2 = st.columns(2)
+                with v1: st.image(image_url, caption=f"Imagine {query}")
+                with v2: st.video(f"https://www.youtube.com/watch?v={video_id}")
 
-        # --- DISPLAY RESULTS ---
-        tab1, tab2 = st.tabs(["📖 THE STORY", "📺 VISUALS"])
-
-        # TAB 1: TEXT AND QUIZ
-        with tab1:
-            st.markdown("## 📖 Explanation & Quiz")
-
-            # --- AUDIO PLAYER CONTROLS ---
-            st.button(
-                f"🔊 Read Explanation Aloud ({language_keyword})", 
-                key='tts_button', 
-                on_click=lambda: st.session_state.update(tts_trigger=True)
-            )
-            st.markdown("---")
-            
-            # Display generated audio if the bytes were successfully generated
-            if audio_bytes_to_display:
-                # Play the raw bytes (shows full controls: progress bar, play/pause)
-                st.audio(audio_bytes_to_display, format='audio/mp3') 
-                st.markdown("---")
-            elif st.session_state.get('tts_trigger'):
-                 st.warning("Please wait a moment for the audio to be generated and try clicking the button again.")
-            
-            st.markdown(text_response)
-            
-            st.markdown("---")
-            
-            # ====== QUIZ DISPLAY SECTION (5 QUESTIONS) ======
-            quiz_container = st.session_state[quiz_key]
-            
-            if quiz_container and 'quizzes' in quiz_container and isinstance(quiz_container['quizzes'], list):
-                st.markdown("### 🤔 Test Your Knowledge! (5 Questions)")
-                
-                if 'quiz_results_history' not in st.session_state:
-                    st.session_state['quiz_results_history'] = {}
-
-                # Iterate through all 5 quizzes
-                for i, quiz_data in enumerate(quiz_container['quizzes']):
-                    st.markdown(f"**Question {i+1}:** {quiz_data['question']}")
-                    
-                    result_key = f'result_q_{i}_{quiz_key}'
-
-                    with st.form(key=f'quiz_form_{i}'):
-                        selected_option = st.radio(
-                            "Select Answer:",
-                            options=quiz_data['options'],
-                            index=None,
-                            key=f'user_selection_{i}'
-                        )
-                        
-                        check_button = st.form_submit_button(f"Check Answer {i+1}")
-
-                    # Handle feedback after submission
-                    if check_button and selected_option is not None:
-                        user_index = quiz_data['options'].index(selected_option)
-                        correct_index = quiz_data['correct_index']
-                        
-                        if user_index == correct_index:
-                            st.session_state['quiz_results_history'][result_key] = True
-                        else:
-                            st.session_state['quiz_results_history'][result_key] = False
-                            
-                    # Display persistent feedback
-                    if result_key in st.session_state['quiz_results_history']:
-                        if st.session_state['quiz_results_history'][result_key]:
-                            st.success(f"🎉 Question {i+1}: Correct! Excellent.")
-                        else:
-                            st.error(f"❌ Question {i+1}: Incorrect. The correct answer was: {quiz_data['options'][correct_index]}")
-
-        # TAB 2: VISUALS
-        with tab2:
-            col_a, col_b = st.columns(2)
-            
-            with col_a:
-                st.markdown("### 🎨 3D Drawing")
-                st.image(image_url, use_container_width=True, caption=f"A 3D image of '{query}'")
-                
-            with col_b:
-                st.markdown("### 🎥 Explanation Video")
-                st.video(f"https://www.youtube.com/watch?v={video_id}")
-                
-                # LANGUAGE TIP
-                st.markdown("""
-                    <div style="
-                        background-color: #1877F2; padding: 10px; border-radius: 8px; margin-top: 15px; text-align: center; box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
-                    ">
-                        <p style="color: #FFFFFF !important; font-weight: 800; font-size: 1rem; margin: 0;">
-                            LANGUAGE TIP: Video audio may be in English for stability.
-                            <br>
-                            TO TRANSLATE SUBTITLES IN YOUR FAVOURITE LANGUAGE : CLICK  SETTINGS ⚙️ > SUBTITLES/CC > AUTO-TRANSLATE ON THE PLAYER ABOVE!
-                        </p>
-                    </div>
-                    """, unsafe_allow_html=True)
+        except Exception as e:
+            st.error("The AI Brain is a bit overwhelmed! Try again in a few seconds.")
